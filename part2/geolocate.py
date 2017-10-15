@@ -30,7 +30,6 @@ class WordLocationClassifier:
 					words[word] += 1
 				else:
 					words[word] = 1
-
 		self.tweetCount += 1
 
 	def top_5_words(self):
@@ -50,6 +49,8 @@ class WordLocationClassifier:
 def location_for_word_score(word, location_classifier):
 	location_classifier
 	# TODO: Calculate and Return P(L|w) using location_classifier
+	for key in location_classifier.words:
+		prob_word_given_location=key/location_classifier.tweetCount
 	return 0;
 
 
@@ -63,3 +64,20 @@ def classify_tweet(tweet):
 
 	# TODO: Find Location with Max Score for each word and Then Find the Location with Max occurrence for Best Score
 
+tweets=[]
+USAStatesAbbr=[',_AS',',_DC',',_FM',',_GU',',_MH',',_MP',',_PW',',_PR',',_VI',',_AL',',_AK',',_AZ',',_AR',',_CA',',_CO',',_CT',',_DE',',_FL',',_GA',',_HI',',_ID',',_IL',',_IN',',_IA',',_KS',',_KY',',_LA',',_ME',',_MD',',_MA',',_MI',',_MN',',_MS',',_MO',',_MT',',_NE',',_NV',',_NH',',_NJ',',_NM',',_NY',',_NC',',_ND',',_OH',',_OK',',_OR',',_PA',',_RI',',_SC',',_SD',',_TN',',_TX',',_UT',',_VT',',_VA',',_WA',',_WV',',_WI',',_WY']
+trainFile = open("/nfs/nfs7/home/vsriniv/a2/tweets.test2.txt", "rt", encoding="latin1")
+for line in trainFile:
+	parsedLine=line.split(" ")
+	if any(str(parsedLine[0])[-4:] in statesAbbr for statesAbbr in USAStatesAbbr):
+		tweets.append(tweetLine)
+		tweetLine=str(line).rstrip("\n\r")
+		total_tweets+=1
+	else:
+		tweetLine=(tweetLine+str(line)).rstrip("\n\r")
+
+citiCount=12
+prob_location=1/float(citiCount)
+classifier = WordLocationClassifier()
+classifier.parse()
+prob_word=len(words)/float(total_tweets)
