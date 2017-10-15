@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Authors: Umang Mehta, Samanvita Pradhan & Vaishnavi Srinivasan
+# Authors: Umang Mehta, Samanvitha Pradhan & Vaishnavi Srinivasan
 
 import copy
 
@@ -9,7 +9,7 @@ words = {}
 
 
 class WordLocationClassifier:
-	def __init__(self, location=None):
+	def __init__(self, location):
 		self.location = location
 		self.words = {}
 		self.tweetCount = 0
@@ -64,20 +64,25 @@ def classify_tweet(tweet):
 
 	# TODO: Find Location with Max Score for each word and Then Find the Location with Max occurrence for Best Score
 
-tweets=[]
-USAStatesAbbr=[',_AS',',_DC',',_FM',',_GU',',_MH',',_MP',',_PW',',_PR',',_VI',',_AL',',_AK',',_AZ',',_AR',',_CA',',_CO',',_CT',',_DE',',_FL',',_GA',',_HI',',_ID',',_IL',',_IN',',_IA',',_KS',',_KY',',_LA',',_ME',',_MD',',_MA',',_MI',',_MN',',_MS',',_MO',',_MT',',_NE',',_NV',',_NH',',_NJ',',_NM',',_NY',',_NC',',_ND',',_OH',',_OK',',_OR',',_PA',',_RI',',_SC',',_SD',',_TN',',_TX',',_UT',',_VT',',_VA',',_WA',',_WV',',_WI',',_WY']
+
+tweets = []
+USAStatesAbbr = [',_AS',',_DC',',_FM',',_GU',',_MH',',_MP',',_PW',',_PR',',_VI',',_AL',',_AK',',_AZ',',_AR',',_CA',',_CO',',_CT',',_DE',',_FL',',_GA',',_HI',',_ID',',_IL',',_IN',',_IA',',_KS',',_KY',',_LA',',_ME',',_MD',',_MA',',_MI',',_MN',',_MS',',_MO',',_MT',',_NE',',_NV',',_NH',',_NJ',',_NM',',_NY',',_NC',',_ND',',_OH',',_OK',',_OR',',_PA',',_RI',',_SC',',_SD',',_TN',',_TX',',_UT',',_VT',',_VA',',_WA',',_WV',',_WI',',_WY']
 trainFile = open("/nfs/nfs7/home/vsriniv/a2/tweets.test2.txt", "rt", encoding="latin1")
 for line in trainFile:
-	parsedLine=line.split(" ")
-	if any(str(parsedLine[0])[-4:] in statesAbbr for statesAbbr in USAStatesAbbr):
+	parsedLine = line.split(" ")
+	if any(parsedLine[0][-4:] in statesAbbr for statesAbbr in USAStatesAbbr):
 		tweets.append(tweetLine)
-		tweetLine=str(line).rstrip("\n\r")
-		total_tweets+=1
+		tweetLine = str(line).rstrip("\n\r")
+		total_tweets += 1
 	else:
-		tweetLine=(tweetLine+str(line)).rstrip("\n\r")
+		tweetLine = (tweetLine + str(line)).rstrip("\n\r")
 
-citiCount=12
-prob_location=1/float(citiCount)
-classifier = WordLocationClassifier()
-classifier.parse()
-prob_word=len(words)/float(total_tweets)
+
+for tweet in tweets:
+	tweet_tokens = tweet.split(" ")
+	if tweet_tokens[0] in locations.keys():
+		classifier = locations[tweet_tokens[0]]
+	else:
+		classifier = WordLocationClassifier(tweet_tokens[0])
+		locations[tweet_tokens[0]] = classifier
+	classifier.parse(" ".join(tweet_tokens[1:]))
