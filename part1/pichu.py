@@ -12,6 +12,11 @@ def evaluation():
 	pass
 
 
+def is_terminal(board):
+	# TODO: Check if the Board State is a Terminal State
+	pass
+
+
 # TODO: Minimax with Alpha-Beta Pruning
 
 
