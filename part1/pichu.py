@@ -1,18 +1,19 @@
-def move():
-	#generate moves
-	pass
+#!/usr/bin/env python3
+# Authors: Umang Mehta, Samanvitha Pradhan & Vaishnavi Srinivasan
 
-def undoMove():
-	#undo move
-	pass
 
 def action():
-	#each successor for pawn, rook, knight, queen, king, bishop
+	# TODO: each successor for pawn, rook, knight, queen, king, bishop
 	pass
 
-def hueristic():
-	#generate hueristic for each action
+
+def evaluation():
+	# TODO: Evaluation Function for the Leaf Nodes of the Game Tree
 	pass
+
+
+# TODO: Minimax with Alpha-Beta Pruning
+
 
 inputBoard=[]
 initialPosition="RNBQKBNRPPPPPPPP................................pppppppprnbqkbnr"
