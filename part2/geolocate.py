@@ -67,15 +67,20 @@ def classify_tweet(tweet):
 
 tweets = []
 USAStatesAbbr = [',_AS',',_DC',',_FM',',_GU',',_MH',',_MP',',_PW',',_PR',',_VI',',_AL',',_AK',',_AZ',',_AR',',_CA',',_CO',',_CT',',_DE',',_FL',',_GA',',_HI',',_ID',',_IL',',_IN',',_IA',',_KS',',_KY',',_LA',',_ME',',_MD',',_MA',',_MI',',_MN',',_MS',',_MO',',_MT',',_NE',',_NV',',_NH',',_NJ',',_NM',',_NY',',_NC',',_ND',',_OH',',_OK',',_OR',',_PA',',_RI',',_SC',',_SD',',_TN',',_TX',',_UT',',_VT',',_VA',',_WA',',_WV',',_WI',',_WY']
-trainFile = open("/nfs/nfs7/home/vsriniv/a2/tweets.test2.txt", "rt", encoding="latin1")
+try:
+	trainFile = open("/nfs/nfs7/home/vsriniv/a2/tweets.test2.txt", "rt")
+except:
+	trainFile = open("/nfs/nfs7/home/vsriniv/a2/tweets.test2.txt", "rt", encoding="latin1")
+
 for line in trainFile:
 	parsedLine = line.split(" ")
 	if any(parsedLine[0][-4:] in statesAbbr for statesAbbr in USAStatesAbbr):
+		tweetLine = ""
 		tweets.append(tweetLine)
 		tweetLine = str(line).rstrip("\n\r")
 		total_tweets += 1
 	else:
-		tweetLine = (tweetLine + str(line)).rstrip("\n\r")
+		tweetLine = (tweetLine + " " + str(line)).rstrip("\n\r")
 
 
 for tweet in tweets:
