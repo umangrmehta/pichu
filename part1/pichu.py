@@ -7,7 +7,7 @@ def action():
 	pass
 
 
-def evaluation():
+def evaluation(board):
 	# TODO: Evaluation Function for the Leaf Nodes of the Game Tree
 	pass
 
@@ -17,10 +17,18 @@ def is_terminal(board):
 	pass
 
 
+def successors(board):
+	# TODO: Generate all successor board to th given board
+	pass
+
+
 # TODO: Minimax with Alpha-Beta Pruning
 
 
-inputBoard=[]
+inputBoard = []
 initialPosition="RNBQKBNRPPPPPPPP................................pppppppprnbqkbnr"
 for counter in range(0,len(initialPosition),1):
 	inputBoard.append(initialPosition[counter])
+
+horizon = 3
+
