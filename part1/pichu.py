@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # Authors: Umang Mehta, Samanvitha Pradhan & Vaishnavi Srinivasan
 
+import math
+
 
 def action():
 	# TODO: each successor for pawn, rook, knight, queen, king, bishop
@@ -23,6 +25,34 @@ def successors(board):
 
 
 # TODO: Minimax with Alpha-Beta Pruning
+def decision():
+	return max(successors(inputBoard), key=lambda successor: min_value(successor, -math.inf, math.inf, 1))
+
+
+def max_value(board, alpha, beta, level):
+	if is_terminal(board) or level == horizon:
+		return evaluation(board)
+	else:
+		for successor in successors(board):
+			value = min_value(successor, alpha, beta, level + 1)
+			if value > alpha:
+				alpha = value
+			if alpha >= beta:
+				return alpha
+		return alpha
+
+
+def min_value(board, alpha, beta, level):
+	if is_terminal(board) or level == horizon:
+		return evaluation(board)
+	else:
+		for successor in successors(board):
+			value = max_value(successor, alpha, beta, level + 1)
+			if value < beta:
+				beta = value
+			if alpha >= beta:
+				return beta
+		return beta
 
 
 inputBoard = []
