@@ -2,6 +2,7 @@
 # Authors: Umang Mehta, Samanvitha Pradhan & Vaishnavi Srinivasan
 
 import copy
+import math
 
 
 def findPos(board, charToBeFound):
@@ -762,6 +763,34 @@ def successors(board):
 
 
 # TODO: Minimax with Alpha-Beta Pruning
+def decision():
+	return max(successors(inputBoard), key=lambda successor: min_value(successor, -math.inf, math.inf, 1))
+
+
+def max_value(board, alpha, beta, level):
+	if is_terminal(board) or level == horizon:
+		return evaluation(board)
+	else:
+		for successor in successors(board):
+			value = min_value(successor, alpha, beta, level + 1)
+			if value > alpha:
+				alpha = value
+			if alpha >= beta:
+				return alpha
+		return alpha
+
+
+def min_value(board, alpha, beta, level):
+	if is_terminal(board) or level == horizon:
+		return evaluation(board)
+	else:
+		for successor in successors(board):
+			value = max_value(successor, alpha, beta, level + 1)
+			if value < beta:
+				beta = value
+			if alpha >= beta:
+				return beta
+		return beta
 
 
 inputBoard = []
