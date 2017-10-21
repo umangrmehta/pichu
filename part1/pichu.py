@@ -9,34 +9,50 @@ def findPos(board, charToBeFound):
 	return [(row, col) for col in range(0, 8, 1) for row in range(0, 8, 1) if board[row][col] == charToBeFound]
 
 
-def updatePos(board, xPos1, yPos1, xPos2, yPos2, charToReplace):
+def updatePos(board, xPos1, yPos1, xPos2, yPos2, charToReplace, message):
 	tempState = copy.deepcopy(board)
 	tempState[xPos1][yPos1] = '.'
 	tempState[xPos2][yPos2] = charToReplace
 	# https://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python
 	flatList = [col for row in tempState for col in row]
+	flatListString="".join([ row for row in inputBoard ])
+	hueristic=evaluation(flatList)
+	succDict.setdefault(hueristic,[])
+	succDict[hueristic].append(flatListString)
+	#succDict[evaluation(flatList)] = flatList
+	movesDict.setdefault(flatListString,[])
+	movesDict[flatListString].append(message)
+	#movesDict[flatListString] = message
 	return flatList
 
 
 def evaluation(board):
 	whiteCount = 0
 	blackCount = 0
-	whiteCount += board.count('P')
-	whiteCount += board.count('R')
-	whiteCount += board.count('B')
-	whiteCount += board.count('N')
-	whiteCount += board.count('Q')
-	whiteCount += board.count('K')
-	blackCount += board.count('p')
-	blackCount += board.count('r')
-	blackCount += board.count('b')
-	blackCount += board.count('n')
-	blackCount += board.count('q')
-	blackCount += board.count('k')
+	whiteCount = (whiteCount + board.count('P'))*1
+	whiteCount = (whiteCount + board.count('R'))*7
+	whiteCount = (whiteCount + board.count('B'))*float(3.5)
+	whiteCount = (whiteCount + board.count('N'))*4
+	whiteCount = (whiteCount + board.count('Q'))*float(13.5)
+	blackCount = (blackCount + board.count('p'))*1
+	blackCount = (blackCount + board.count('r'))*7
+	blackCount = (blackCount + board.count('b'))*float(3.5)
+	blackCount = (blackCount + board.count('n'))*4
+	blackCount = (blackCount + board.count('q'))*float(13.5)
 	if player == 'w':
-		turnCount = blackCount - whiteCount
+		if ('K' in board) and not ('k' in board) :
+			turnCount=55
+		elif ('k' in board) and not ('K' in board) :
+			turnCount=-55
+		else :
+			turnCount = blackCount - whiteCount
 	if player == 'b':
-		turnCount = whiteCount - blackCount
+		if ('k' in board) and not ('K' in board) :
+			turnCount=55
+		elif ('K' in board) and not ('k' in board) :
+			turnCount=-55
+		else :
+			turnCount = whiteCount - blackCount
 	return turnCount
 
 
@@ -60,32 +76,27 @@ def successors(board):
 			colCounter = pawnPos[possiblePositions][1]
 			# move pawn down
 			if (rowCounter + 1) <= 7:
-				if (currentState[rowCounter + 1][colCounter].islower()) or currentState[rowCounter + 1][
-					colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter, 'P'))
+				if (currentState[rowCounter + 1][colCounter].islower()) or currentState[rowCounter + 1][colCounter] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter, 'P','Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter+1)))
 			if rowCounter == 1:
 				if currentState[rowCounter + 1][colCounter] == '.' and currentState[rowCounter + 2][colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter, 'P'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter, 'P','Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+2+1)+' column '+(colCounter+1)))
 			# move pawn left
 			if (colCounter - 1) >= 0:
-				if (currentState[rowCounter][colCounter - 1].islower()) or currentState[rowCounter][
-							colCounter - 1] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter - 1, 'P'))
+				if (currentState[rowCounter][colCounter - 1].islower()) or currentState[rowCounter][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter - 1, 'P','Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(colCounter-1+1)))
 			# move pawn right
 			if (colCounter + 1) <= 7:
-				if (currentState[rowCounter][colCounter + 1].islower()) or currentState[rowCounter][
-							colCounter + 1] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter + 1, 'P'))
+				if (currentState[rowCounter][colCounter + 1].islower()) or currentState[rowCounter][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter + 1, 'P','Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(colCounter+1+1)))
 			# move pawn left diagonally
 			if (colCounter - 1) >= 0 and (rowCounter + 1) <= 7:
 				if (currentState[rowCounter + 1][colCounter - 1].islower()):
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 1, 'P'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 1, 'P','Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter-1+1)))
 			# move pawn right diagonally
 			if (colCounter + 1) <= 7 and (rowCounter + 1) <= 7:
 				if (currentState[rowCounter + 1][colCounter + 1].islower()):
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 1, 'P'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 1, 'P','Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter+1+1)))
 		# each successor for rook
 		rookPos = findPos(currentState, 'R')
 		for possiblePositions in range(0, len(rookPos), 1):
@@ -96,10 +107,10 @@ def successors(board):
 				if (currentState[i][colCounter].isupper()):
 					break
 				elif (currentState[i][colCounter].islower()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'R'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'R','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 					break
 				elif currentState[i][colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'R'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'R','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 				else:
 					pass
 			# move rook down
@@ -107,10 +118,10 @@ def successors(board):
 				if (currentState[i][colCounter].isupper()):
 					break
 				elif (currentState[i][colCounter].islower()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'R'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'R','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 					break
 				elif currentState[i][colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'R'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'R','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 				else:
 					pass
 			# move rook left
@@ -118,10 +129,10 @@ def successors(board):
 				if (currentState[rowCounter][i].isupper()):
 					break
 				elif (currentState[rowCounter][i].islower()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'R'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'R','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 					break
 				elif currentState[rowCounter][i] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'R'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'R','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 				else:
 					pass
 			# move rook right
@@ -129,10 +140,10 @@ def successors(board):
 				if (currentState[rowCounter][i].isupper()):
 					break
 				elif (currentState[rowCounter][i].islower()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'R'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'R','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 					break
 				elif currentState[rowCounter][i] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'R'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'R','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 				else:
 					pass
 		# each successor for bishop
@@ -146,12 +157,10 @@ def successors(board):
 					if (currentState[rowCounter - r][colCounter - r].isupper()):
 						break
 					elif (currentState[rowCounter - r][colCounter - r].islower()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'B'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'B','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-r+1)+' column '+(colCounter-r+1)))
 						break
 					elif currentState[rowCounter - r][colCounter - r] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'B'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'B','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-r+1)+' column '+(colCounter-r+1)))
 					else:
 						pass
 			i = 1
@@ -160,12 +169,10 @@ def successors(board):
 					if (currentState[rowCounter + i][colCounter + i].isupper()):
 						break
 					elif (currentState[rowCounter + i][colCounter + i].islower()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'B'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'B','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter+i+1)))
 						break
 					elif currentState[rowCounter + i][colCounter + i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'B'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'B','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter+i+1)))
 					else:
 						pass
 					i += 1
@@ -176,12 +183,10 @@ def successors(board):
 					if (currentState[rowCounter - i][colCounter + i].isupper()):
 						break
 					elif (currentState[rowCounter - i][colCounter + i].islower()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'B'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'B','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-i+1)+' column '+(colCounter+i+1)))
 						break
 					elif currentState[rowCounter - i][colCounter + i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'B'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'B','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-i+1)+' column '+(colCounter+i+1)))
 					else:
 						pass
 					i += 1
@@ -191,12 +196,10 @@ def successors(board):
 					if (currentState[rowCounter + i][colCounter - i].isupper()):
 						break
 					elif (currentState[rowCounter + i][colCounter - i].islower()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'B'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'B','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter-i+1)))
 						break
 					elif currentState[rowCounter + i][colCounter - i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'B'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'B','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter-i+1)))
 					else:
 						pass
 					i += 1
@@ -211,12 +214,10 @@ def successors(board):
 					if (currentState[rowCounter - r][colCounter - r].isupper()):
 						break
 					elif (currentState[rowCounter - r][colCounter - r].islower()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'Q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-r+1)+' column '+(colCounter-r+1)))
 						break
 					elif currentState[rowCounter - r][colCounter - r] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'Q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-r+1)+' column '+(colCounter-r+1)))
 					else:
 						pass
 			i = 1
@@ -225,12 +226,10 @@ def successors(board):
 					if (currentState[rowCounter + i][colCounter + i].isupper()):
 						break
 					elif (currentState[rowCounter + i][colCounter + i].islower()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'Q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter+i+1)))
 						break
 					elif currentState[rowCounter + i][colCounter + i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'Q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter+i+1)))
 					else:
 						pass
 					i += 1
@@ -241,12 +240,10 @@ def successors(board):
 					if (currentState[rowCounter - i][colCounter + i].isupper()):
 						break
 					elif (currentState[rowCounter - i][colCounter + i].islower()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'Q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-i+1)+' column '+(colCounter+i+1)))
 						break
 					elif currentState[rowCounter - i][colCounter + i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'Q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-i+1)+' column '+(colCounter+i+1)))
 					else:
 						pass
 					i += 1
@@ -256,12 +253,10 @@ def successors(board):
 					if (currentState[rowCounter + i][colCounter - i].isupper()):
 						break
 					elif (currentState[rowCounter + i][colCounter - i].islower()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'Q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter-i+1)))
 						break
 					elif currentState[rowCounter + i][colCounter - i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'Q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter-i+1)))
 					else:
 						pass
 					i += 1
@@ -270,10 +265,10 @@ def successors(board):
 				if (currentState[i][colCounter].isupper()):
 					break
 				elif (currentState[i][colCounter].islower()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'Q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 					break
 				elif currentState[i][colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'Q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 				else:
 					pass
 			# move queen down
@@ -281,10 +276,10 @@ def successors(board):
 				if (currentState[i][colCounter].isupper()):
 					break
 				elif (currentState[i][colCounter].islower()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'Q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 					break
 				elif currentState[i][colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'Q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 				else:
 					pass
 			# move queen left
@@ -292,10 +287,10 @@ def successors(board):
 				if (currentState[rowCounter][i].isupper()):
 					break
 				elif (currentState[rowCounter][i].islower()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'Q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 					break
 				elif currentState[rowCounter][i] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'Q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 				else:
 					pass
 			# move queen right
@@ -303,10 +298,10 @@ def successors(board):
 				if (currentState[rowCounter][i].isupper()):
 					break
 				elif (currentState[rowCounter][i].islower()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'Q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 					break
 				elif currentState[rowCounter][i] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'Q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 				else:
 					pass
 		# each successor for king
@@ -316,48 +311,36 @@ def successors(board):
 			colCounter = kingPos[possiblePositions][1]
 			# move king up
 			if (rowCounter - 1) >= 0:
-				if (currentState[rowCounter - 1][colCounter].islower()) or currentState[rowCounter - 1][
-					colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter, 'K'))
+				if (currentState[rowCounter - 1][colCounter].islower()) or currentState[rowCounter - 1][colCounter] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter, 'K','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter+1)))
 			# move king down
 			if (rowCounter + 1) <= 7:
-				if (currentState[rowCounter + 1][colCounter].islower()) or currentState[rowCounter + 1][
-					colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter, 'K'))
+				if (currentState[rowCounter + 1][colCounter].islower()) or currentState[rowCounter + 1][colCounter] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter, 'K','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter+1)))
 			# move king left
 			if (colCounter - 1) >= 0:
-				if (currentState[rowCounter][colCounter - 1].islower()) or currentState[rowCounter][
-							colCounter - 1] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter - 1, 'K'))
+				if (currentState[rowCounter][colCounter - 1].islower()) or currentState[rowCounter][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter - 1, 'K','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(colCounter-1+1)))
 			# move king right
 			if (colCounter + 1) <= 7:
-				if (currentState[rowCounter][colCounter + 1].islower()) or currentState[rowCounter][
-							colCounter + 1] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter + 1, 'K'))
+				if (currentState[rowCounter][colCounter + 1].islower()) or currentState[rowCounter][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter + 1, 'K','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(colCounter+1+1)))
 			# move king left diagonally down
 			if (rowCounter + 1) <= 7 and (colCounter - 1) >= 0:
-				if (currentState[rowCounter + 1][colCounter - 1].islower()) or currentState[rowCounter + 1][
-							colCounter - 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 1, 'K'))
+				if (currentState[rowCounter + 1][colCounter - 1].islower()) or currentState[rowCounter + 1][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 1, 'K','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter-1+1)))
 			# move king right diagonally down
 			if (rowCounter + 1) <= 7 and (colCounter + 1) <= 7:
-				if (currentState[rowCounter + 1][colCounter + 1].islower()) or currentState[rowCounter + 1][
-							colCounter + 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 1, 'K'))
+				if (currentState[rowCounter + 1][colCounter + 1].islower()) or currentState[rowCounter + 1][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 1, 'K','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter+1+1)))
 			# move king left diagonally up
 			if (rowCounter - 1) >= 0 and (colCounter - 1) >= 0:
-				if (currentState[rowCounter - 1][colCounter - 1].islower()) or currentState[rowCounter - 1][
-							colCounter - 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 1, 'K'))
+				if (currentState[rowCounter - 1][colCounter - 1].islower()) or currentState[rowCounter - 1][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 1, 'K','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter-1+1)))
 			# move king right diagonally up
 			if (rowCounter - 1) >= 0 and (colCounter + 1) <= 7:
-				if (currentState[rowCounter - 1][colCounter + 1].islower()) or currentState[rowCounter - 1][
-							colCounter + 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 1, 'K'))
+				if (currentState[rowCounter - 1][colCounter + 1].islower()) or currentState[rowCounter - 1][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 1, 'K','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter+1+1)))
 		# each successor for knight
 		knightPos = findPos(currentState, 'N')
 		for possiblePositions in range(0, len(knightPos), 1):
@@ -365,48 +348,32 @@ def successors(board):
 			colCounter = knightPos[possiblePositions][1]
 			# move knight up right L
 			if (rowCounter - 1) >= 0 and (colCounter + 2) <= 7:
-				if (currentState[rowCounter - 1][colCounter + 2].islower()) or currentState[rowCounter - 1][
-							colCounter + 2] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 2, 'N'))
+				if (currentState[rowCounter - 1][colCounter + 2].islower()) or currentState[rowCounter - 1][colCounter + 2] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 2, 'N','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter+1+2)))
 			if (rowCounter - 2) >= 0 and (colCounter + 1) <= 7:
-				if (currentState[rowCounter - 2][colCounter + 1].islower()) or currentState[rowCounter - 2][
-							colCounter + 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter + 1, 'N'))
+				if (currentState[rowCounter - 2][colCounter + 1].islower()) or currentState[rowCounter - 2][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter + 1, 'N','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-2+1)+' column '+(colCounter+1+1)))
 			# move knight up left L
 			if (rowCounter - 1) >= 0 and (colCounter - 2) <= 7:
-				if (currentState[rowCounter - 1][colCounter - 2].islower()) or currentState[rowCounter - 1][
-							colCounter - 2] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 2, 'N'))
+				if (currentState[rowCounter - 1][colCounter - 2].islower()) or currentState[rowCounter - 1][colCounter - 2] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 2, 'N','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter+1-2)))
 			if (rowCounter - 2) >= 0 and (colCounter + 1) <= 7:
-				if (currentState[rowCounter - 2][colCounter - 1].islower()) or currentState[rowCounter - 2][
-							colCounter - 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter - 1, 'N'))
+				if (currentState[rowCounter - 2][colCounter - 1].islower()) or currentState[rowCounter - 2][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter - 1, 'N','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-2+1)+' column '+(colCounter+1+1)))
 			# move knight down left L
 			if (rowCounter + 2) >= 0 and (colCounter + 1) <= 7:
-				if (currentState[rowCounter + 2][colCounter + 1].islower()) or currentState[rowCounter + 2][
-							colCounter + 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter + 1, 'N'))
+				if (currentState[rowCounter + 2][colCounter + 1].islower()) or currentState[rowCounter + 2][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter + 1, 'N','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+2+1)+' column '+(colCounter+1+1)))
 			if (rowCounter + 1) >= 0 and (colCounter + 2) <= 7:
-				if (currentState[rowCounter + 1][colCounter + 2].islower()) or currentState[rowCounter + 1][
-							colCounter + 2] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 2, 'N'))
+				if (currentState[rowCounter + 1][colCounter + 2].islower()) or currentState[rowCounter + 1][colCounter + 2] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 2, 'N','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter+1+2)))
 			# move knight down left L
 			if (rowCounter + 2) >= 0 and (colCounter - 1) <= 7:
-				if (currentState[rowCounter + 2][colCounter - 1].islower()) or currentState[rowCounter + 2][
-							colCounter - 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter - 1, 'N'))
+				if (currentState[rowCounter + 2][colCounter - 1].islower()) or currentState[rowCounter + 2][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter - 1, 'N','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+2+1)+' column '+(colCounter+1-1)))
 			if (rowCounter + 1) >= 0 and (colCounter - 2) <= 7:
-				if (currentState[rowCounter + 1][colCounter - 2].islower()) or currentState[rowCounter + 1][
-							colCounter - 2] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 2, 'N'))
+				if (currentState[rowCounter + 1][colCounter - 2].islower()) or currentState[rowCounter + 1][colCounter - 2] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 2, 'N','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter+1-2)))
 	if player == 'b':
 		# each successor for pawn
 		pawnPos = findPos(currentState, 'p')
@@ -415,32 +382,27 @@ def successors(board):
 			colCounter = pawnPos[possiblePositions][1]
 			# move pawn up
 			if (rowCounter - i) >= 0:
-				if (currentState[rowCounter - 1][colCounter].isupper()) or currentState[rowCounter - 1][
-					colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter, 'p'))
+				if (currentState[rowCounter - 1][colCounter].isupper()) or currentState[rowCounter - 1][colCounter] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter, 'p', 'Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter+1)))
 			if rowCounter == 6:
 				if currentState[rowCounter - 1][colCounter] == '.' and currentState[rowCounter - 2][colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter, 'p'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter, 'p', 'Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-2+1)+' column '+(colCounter+1)))
 			# move pawn left
 			if (colCounter - 1) >= 0:
-				if (currentState[rowCounter][colCounter - 1].isupper()) or currentState[rowCounter][
-							colCounter - 1] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter - 1, 'p'))
+				if (currentState[rowCounter][colCounter - 1].isupper()) or currentState[rowCounter][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter - 1, 'p', 'Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(colCounter-1+1)))
 			# move pawn right
 			if (colCounter + 1) <= 7:
-				if (currentState[rowCounter][colCounter + 1].isupper()) or currentState[rowCounter][
-							colCounter + 1] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter + 1, 'p'))
+				if (currentState[rowCounter][colCounter + 1].isupper()) or currentState[rowCounter][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter + 1, 'p', 'Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(colCounter+1+1)))
 			# move pawn left diagonally
 			if (colCounter - 1) >= 0 and (rowCounter - 1) >= 0:
 				if (currentState[rowCounter - 1][colCounter - 1].isupper()):
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 1, 'p'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 1, 'p', 'Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter-1+1)))
 			# move pawn right diagonally
 			if (colCounter + 1) <= 7 and (rowCounter - 1) >= 0:
 				if (currentState[rowCounter - 1][colCounter + 1].isupper()):
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 1, 'p'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 1, 'p', 'Pawn at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter+1+1)))
 		# each successor for rook
 		rookPos = findPos(currentState, 'r')
 		for possiblePositions in range(0, len(rookPos), 1):
@@ -451,10 +413,10 @@ def successors(board):
 				if (currentState[i][colCounter].islower()):
 					break
 				elif (currentState[i][colCounter].isupper()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'r'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'r','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 					break
 				elif currentState[i][colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'r'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'r','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 				else:
 					pass
 			# move rook down
@@ -462,10 +424,10 @@ def successors(board):
 				if (currentState[i][colCounter].islower()):
 					break
 				elif (currentState[i][colCounter].isupper()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'r'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'r','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 					break
 				elif currentState[i][colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'r'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'r','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 				else:
 					pass
 			# move rook left
@@ -473,10 +435,10 @@ def successors(board):
 				if (currentState[rowCounter][i].islower()):
 					break
 				elif (currentState[rowCounter][i].isupper()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'r'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'r','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 					break
 				elif currentState[rowCounter][i] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'r'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'r','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 				else:
 					pass
 			# move rook right
@@ -484,10 +446,10 @@ def successors(board):
 				if (currentState[rowCounter][i].islower()):
 					break
 				elif (currentState[rowCounter][i].isupper()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'r'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'r','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 					break
 				elif currentState[rowCounter][i] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'r'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'r','Rook at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 				else:
 					pass
 		# each successor for bishop
@@ -501,12 +463,10 @@ def successors(board):
 					if (currentState[rowCounter - r][colCounter - r].islower()):
 						break
 					elif (currentState[rowCounter - r][colCounter - r].isupper()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'b'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'b','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-r+1)+' column '+(colCounter-r+1)))
 						break
 					elif currentState[rowCounter - r][colCounter - r] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'b'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'b','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-r+1)+' column '+(colCounter-r+1)))
 					else:
 						pass
 			i = 1
@@ -515,12 +475,10 @@ def successors(board):
 					if (currentState[rowCounter + i][colCounter + i].islower()):
 						break
 					elif (currentState[rowCounter + i][colCounter + i].isupper()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'b'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'b','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter+i+1)))
 						break
 					elif currentState[rowCounter + i][colCounter + i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'b'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'b','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter+i+1)))
 					else:
 						pass
 					i += 1
@@ -531,12 +489,10 @@ def successors(board):
 					if (currentState[rowCounter - i][colCounter + i].islower()):
 						break
 					elif (currentState[rowCounter - i][colCounter + i].isupper()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'b'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'b','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-i+1)+' column '+(colCounter+i+1)))
 						break
 					elif currentState[rowCounter - i][colCounter + i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'b'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'b','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-i+1)+' column '+(colCounter+i+1)))
 					else:
 						pass
 					i += 1
@@ -546,12 +502,10 @@ def successors(board):
 					if (currentState[rowCounter + i][colCounter - i].islower()):
 						break
 					elif (currentState[rowCounter + i][colCounter - i].isupper()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'b'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'b','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter-i+1)))
 						break
 					elif currentState[rowCounter + i][colCounter - i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'b'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'b','Bishop at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter-i+1)))
 					else:
 						pass
 					i += 1
@@ -566,12 +520,10 @@ def successors(board):
 					if (currentState[rowCounter - r][colCounter - r].islower()):
 						break
 					elif (currentState[rowCounter - r][colCounter - r].isupper()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-r+1)+' column '+(colCounter-r+1)))
 						break
 					elif currentState[rowCounter - r][colCounter - r] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, 'q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-r+1)+' column '+(colCounter-r+1)))
 					else:
 						pass
 			i = 1
@@ -580,12 +532,10 @@ def successors(board):
 					if (currentState[rowCounter + i][colCounter + i].islower()):
 						break
 					elif (currentState[rowCounter + i][colCounter + i].isupper()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'q', 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter+i+1)))
 						break
 					elif currentState[rowCounter + i][colCounter + i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, 'q', 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter+i+1)))
 					else:
 						pass
 					i += 1
@@ -596,12 +546,10 @@ def successors(board):
 					if (currentState[rowCounter - i][colCounter + i].islower()):
 						break
 					elif (currentState[rowCounter - i][colCounter + i].isupper()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'q', 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-i+1)+' column '+(colCounter+i+1)))
 						break
 					elif currentState[rowCounter - i][colCounter + i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, 'q', 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-i+1)+' column '+(colCounter+i+1)))
 					else:
 						pass
 					i += 1
@@ -611,12 +559,10 @@ def successors(board):
 					if (currentState[rowCounter + i][colCounter - i].islower()):
 						break
 					elif (currentState[rowCounter + i][colCounter - i].isupper()):
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'q', 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter-i+1)))
 						break
 					elif currentState[rowCounter + i][colCounter - i] == '.':
-						successor.append(
-							updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'q'))
+						successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, 'q', 'Q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+i+1)+' column '+(colCounter-i+1)))
 					else:
 						pass
 					i += 1
@@ -625,10 +571,10 @@ def successors(board):
 				if (currentState[i][colCounter].islower()):
 					break
 				elif (currentState[i][colCounter].isupper()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 					break
 				elif currentState[i][colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 				else:
 					pass
 			# move queen down
@@ -636,10 +582,10 @@ def successors(board):
 				if (currentState[i][colCounter].islower()):
 					break
 				elif (currentState[i][colCounter].isupper()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 					break
 				elif currentState[i][colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, 'q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(i+1)+' column '+(colCounter+1)))
 				else:
 					pass
 			# move queen left
@@ -647,10 +593,10 @@ def successors(board):
 				if (currentState[rowCounter][i].islower()):
 					break
 				elif (currentState[rowCounter][i].isupper()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 					break
 				elif currentState[rowCounter][i] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 				else:
 					pass
 			# move queen right
@@ -658,10 +604,10 @@ def successors(board):
 				if (currentState[rowCounter][i].islower()):
 					break
 				elif (currentState[rowCounter][i].isupper()):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 					break
 				elif currentState[rowCounter][i] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'q'))
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, 'q','Queen at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(i+1)))
 				else:
 					pass
 		# each successor for king
@@ -671,48 +617,36 @@ def successors(board):
 			colCounter = kingPos[possiblePositions][1]
 			# move king up
 			if (rowCounter - 1) >= 0:
-				if (currentState[rowCounter - 1][colCounter].isupper()) or currentState[rowCounter - 1][
-					colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter, 'k'))
+				if (currentState[rowCounter - 1][colCounter].isupper()) or currentState[rowCounter - 1][colCounter] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter, 'k','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter+1)))
 			# move king down
 			if (rowCounter + 1) <= 7:
-				if (currentState[rowCounter + 1][colCounter].isupper()) or currentState[rowCounter + 1][
-					colCounter] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter, 'k'))
+				if (currentState[rowCounter + 1][colCounter].isupper()) or currentState[rowCounter + 1][colCounter] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter, 'k','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter+1)))
 			# move king left
 			if (colCounter - 1) >= 0:
-				if (currentState[rowCounter][colCounter - 1].isupper()) or currentState[rowCounter][
-							colCounter - 1] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter - 1, 'k'))
+				if (currentState[rowCounter][colCounter - 1].isupper()) or currentState[rowCounter][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter - 1, 'k','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(colCounter+1-1)))
 			# move king right
 			if (colCounter + 1) <= 7:
-				if (currentState[rowCounter][colCounter + 1].isupper()) or currentState[rowCounter][
-							colCounter + 1] == '.':
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter + 1, 'k'))
+				if (currentState[rowCounter][colCounter + 1].isupper()) or currentState[rowCounter][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter + 1, 'k','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1)+' column '+(colCounter+1+1)))
 			# move king left diagonally down
 			if (rowCounter + 1) <= 7 and (colCounter - 1) >= 0:
-				if (currentState[rowCounter + 1][colCounter - 1].isupper()) or currentState[rowCounter + 1][
-							colCounter - 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 1, 'k'))
+				if (currentState[rowCounter + 1][colCounter - 1].isupper()) or currentState[rowCounter + 1][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 1, 'k','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter+1-1)))
 			# move king right diagonally down
 			if (rowCounter + 1) <= 7 and (colCounter + 1) <= 7:
-				if (currentState[rowCounter + 1][colCounter + 1].isupper()) or currentState[rowCounter + 1][
-							colCounter + 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 1, 'k'))
+				if (currentState[rowCounter + 1][colCounter + 1].isupper()) or currentState[rowCounter + 1][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 1, 'k','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter+1+1)))
 			# move king left diagonally up
 			if (rowCounter - 1) >= 0 and (colCounter - 1) >= 0:
-				if (currentState[rowCounter - 1][colCounter - 1].isupper()) or currentState[rowCounter - 1][
-							colCounter - 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 1, 'k'))
+				if (currentState[rowCounter - 1][colCounter - 1].isupper()) or currentState[rowCounter - 1][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 1, 'k','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter-1+1)))
 			# move king right diagonally up
 			if (rowCounter - 1) >= 0 and (colCounter + 1) <= 7:
-				if (currentState[rowCounter - 1][colCounter + 1].isupper()) or currentState[rowCounter - 1][
-							colCounter + 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 1, 'k'))
+				if (currentState[rowCounter - 1][colCounter + 1].isupper()) or currentState[rowCounter - 1][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 1, 'k','King at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter+1+1)))
 		# each successor for knight
 		knightPos = findPos(currentState, 'n')
 		for possiblePositions in range(0, len(knightPos), 1):
@@ -720,48 +654,32 @@ def successors(board):
 			colCounter = knightPos[possiblePositions][1]
 			# move knight up right L
 			if (rowCounter - 1) >= 0 and (colCounter + 2) <= 7:
-				if (currentState[rowCounter - 1][colCounter + 2].isupper()) or currentState[rowCounter - 1][
-							colCounter + 2] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 2, 'n'))
+				if (currentState[rowCounter - 1][colCounter + 2].isupper()) or currentState[rowCounter - 1][colCounter + 2] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 2, 'n','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter+1+2)))
 			if (rowCounter - 2) >= 0 and (colCounter + 1) <= 7:
-				if (currentState[rowCounter - 2][colCounter + 1].isupper()) or currentState[rowCounter - 2][
-							colCounter + 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter + 1, 'n'))
+				if (currentState[rowCounter - 2][colCounter + 1].isupper()) or currentState[rowCounter - 2][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter + 1, 'n','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-2+1)+' column '+(colCounter+1+1)))
 			# move knight up left L
 			if (rowCounter - 1) >= 0 and (colCounter - 2) <= 7:
-				if (currentState[rowCounter - 1][colCounter - 2].isupper()) or currentState[rowCounter - 1][
-							colCounter - 2] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 2, 'n'))
+				if (currentState[rowCounter - 1][colCounter - 2].isupper()) or currentState[rowCounter - 1][colCounter - 2] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 2, 'n','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-1+1)+' column '+(colCounter+1-2)))
 			if (rowCounter - 2) >= 0 and (colCounter + 1) <= 7:
-				if (currentState[rowCounter - 2][colCounter - 1].isupper()) or currentState[rowCounter - 2][
-							colCounter - 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter - 1, 'n'))
+				if (currentState[rowCounter - 2][colCounter - 1].isupper()) or currentState[rowCounter - 2][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter - 1, 'n','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter-2+1)+' column '+(colCounter+1+1)))
 			# move knight down left L
 			if (rowCounter + 2) >= 0 and (colCounter + 1) <= 7:
-				if (currentState[rowCounter + 2][colCounter + 1].isupper()) or currentState[rowCounter + 2][
-							colCounter + 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter + 1, 'n'))
+				if (currentState[rowCounter + 2][colCounter + 1].isupper()) or currentState[rowCounter + 2][colCounter + 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter + 1, 'n','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+2+1)+' column '+(colCounter+1+1)))
 			if (rowCounter + 1) >= 0 and (colCounter + 2) <= 7:
-				if (currentState[rowCounter + 1][colCounter + 2].isupper()) or currentState[rowCounter + 1][
-							colCounter + 2] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 2, 'n'))
+				if (currentState[rowCounter + 1][colCounter + 2].isupper()) or currentState[rowCounter + 1][colCounter + 2] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 2, 'n','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter+1+2)))
 			# move knight down left L
 			if (rowCounter + 2) >= 0 and (colCounter - 1) <= 7:
-				if (currentState[rowCounter + 2][colCounter - 1].isupper()) or currentState[rowCounter + 2][
-							colCounter - 1] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter - 1, 'n'))
+				if (currentState[rowCounter + 2][colCounter - 1].isupper()) or currentState[rowCounter + 2][colCounter - 1] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter - 1, 'n','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+2+1)+' column '+(colCounter+1-1)))
 			if (rowCounter + 1) >= 0 and (colCounter - 2) <= 7:
-				if (currentState[rowCounter + 1][colCounter - 2].isupper()) or currentState[rowCounter + 1][
-							colCounter - 2] == '.':
-					successor.append(
-						updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 2, 'n'))
+				if (currentState[rowCounter + 1][colCounter - 2].isupper()) or currentState[rowCounter + 1][colCounter - 2] == '.':
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 2, 'n','Knight at row '+(rowCounter+1)+' column '+(colCounter+1)+' to row '+(rowCounter+1+1)+' column '+(colCounter+1-2)))
 
 
 # TODO: Minimax with Alpha-Beta Pruning
