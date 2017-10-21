@@ -33,6 +33,12 @@ def isFriend(board, x,  y):
 		return False
 
 
+def onBoard(x, y):
+	if 0 <= x <= 7 and  0 <= y <= 7:
+		return True
+	return False
+
+
 def evaluation(board):
 	board = board['board']
 	whiteCount = 0
@@ -64,7 +70,7 @@ def evaluation(board):
 	return turnCount
 
 
-def is_terminal(board):
+def isTerminal(board):
 	# TODO: Check if the Board State is a Terminal State
 	board = board['board']
 	if "K" in board and "k" in board:
@@ -698,8 +704,8 @@ def decision():
 	# for s in successors(inputBoard):
 	# 	print(s['board'])
 	# 	print(min_value(s, -100, 100, 1))
-	if not is_terminal(initialBoard):
-		return max(successors(initialBoard), key=lambda successor: min_value(successor, -100, 100, 1))
+	if not isTerminal(initialBoard):
+		return max(successors(initialBoard), key=lambda successor: minValue(successor, -100, 100, 1))
 	else:
 		if evaluation(initialBoard) > 0:
 			initialBoard['action'] = "You have already Won"
@@ -709,14 +715,14 @@ def decision():
 			return initialBoard
 
 
-def max_value(board, alpha, beta, level):
-	if is_terminal(board) or level == horizon:
+def maxValue(board, alpha, beta, level):
+	if isTerminal(board) or level == horizon:
 		print(board)
 		print("MAX: " + str(evaluation(board)))
 		return evaluation(board)
 	else:
 		for successor in successors(board):
-			value = min_value(successor, alpha, beta, level + 1)
+			value = minValue(successor, alpha, beta, level + 1)
 			if value > alpha:
 				alpha = value
 			if alpha >= beta:
@@ -724,14 +730,14 @@ def max_value(board, alpha, beta, level):
 		return alpha
 
 
-def min_value(board, alpha, beta, level):
-	if is_terminal(board) or level == horizon:
+def minValue(board, alpha, beta, level):
+	if isTerminal(board) or level == horizon:
 		print(board)
 		print("MIN: " + str(evaluation(board)))
 		return evaluation(board)
 	else:
 		for successor in successors(board):
-			value = max_value(successor, alpha, beta, level + 1)
+			value = maxValue(successor, alpha, beta, level + 1)
 			if value < beta:
 				beta = value
 			if alpha >= beta:
