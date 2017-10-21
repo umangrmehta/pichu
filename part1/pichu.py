@@ -42,7 +42,9 @@ def evaluation(board):
 
 def is_terminal(board):
 	# TODO: Check if the Board State is a Terminal State
-	pass
+	if "K" in board and "k" in board:
+		return False
+	return True
 
 
 def successors(board):
@@ -800,6 +802,6 @@ player = 'w'
 for counter in range(0, len(initialPosition), 1):
 	inputBoard.append(initialPosition[counter])
 
-currentState = [inputBoard[i:i + 8] for i in range(0, len(inputBoard), 8)]
+# currentState = [inputBoard[i:i + 8] for i in range(0, len(inputBoard), 8)]
 
 horizon = 3
