@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # Authors: Umang Mehta, Samanvitha Pradhan & Vaishnavi Srinivasan
-
+import sys
+from collections import Counter
 import copy
+import re
 
 total_tweets = 0
 locations = {}
@@ -62,26 +64,43 @@ def classify_tweet(tweet):
 
 	# Tweet Parsing here
 	tweet_words = process_copy.split(" ")
+	
 
-	# TODO: Find Location with Max Score for each word and Then Find the Location with Max occurrence for Best Score
+	# Find Location with Max Score for each word and Then Find the Location with Max occurrence for Best Score
+	# Find Location with Max Score for each word
+	for word in tweet_words:
+		score = -1
+		final_location_per_word = ''
+		location_value_per_tweet = []
+		for location in locations:
+			location_per_word = location_for_word_score(word,location)
+			final_location_per_word = location if location_per_word > score else final_location_per_word
+		print("final" + final_location_per_word)
+		location_value_per_tweet = location_value_per_tweet.append(final_location_per_word)
+	# Find the Location with Max occurrence for Best Score		  
+	count_of_locations = Counter(location_value_per_tweet)
+	print(count_of_locations)
+	final_location = ''
+	maximum = max(count_of_locations.values())
+	for key in count_of_locations:
+		if loc_values[key] > maximum:
+			final_location = key
+	return final_location
 
 
+pattern = re.compile(r'.*,_[A-Z][A-Z]\s')
+trainFile = open(sys.argv[1],'r')
 tweets = []
-USAStatesAbbr = [',_AS',',_DC',',_FM',',_GU',',_MH',',_MP',',_PW',',_PR',',_VI',',_AL',',_AK',',_AZ',',_AR',',_CA',',_CO',',_CT',',_DE',',_FL',',_GA',',_HI',',_ID',',_IL',',_IN',',_IA',',_KS',',_KY',',_LA',',_ME',',_MD',',_MA',',_MI',',_MN',',_MS',',_MO',',_MT',',_NE',',_NV',',_NH',',_NJ',',_NM',',_NY',',_NC',',_ND',',_OH',',_OK',',_OR',',_PA',',_RI',',_SC',',_SD',',_TN',',_TX',',_UT',',_VT',',_VA',',_WA',',_WV',',_WI',',_WY']
-try:
-	trainFile = open("/nfs/nfs7/home/vsriniv/a2/tweets.test2.txt", "rt")
-except:
-	trainFile = open("/nfs/nfs7/home/vsriniv/a2/tweets.test2.txt", "rt", encoding="latin1")
-
+tweetLine = ''
 for line in trainFile:
 	parsedLine = line.split(" ")
-	if any(parsedLine[0][-4:] in statesAbbr for statesAbbr in USAStatesAbbr):
-		tweetLine = ""
+	if re.search(pattern,parsedLine[0]):	# Searching for the pattern of the State
 		tweets.append(tweetLine)
 		tweetLine = str(line).rstrip("\n\r")
 		total_tweets += 1
 	else:
 		tweetLine = (tweetLine + " " + str(line)).rstrip("\n\r")
+
 
 
 for tweet in tweets:
@@ -92,3 +111,11 @@ for tweet in tweets:
 		classifier = WordLocationClassifier(tweet_tokens[0])
 		locations[tweet_tokens[0]] = classifier
 	classifier.parse(" ".join(tweet_tokens[1:]))
+	
+output = open(sys.argv[3],"w+")
+with open(sys.argv[2],"r") as train_tweets:
+	for tweet in train_tweets:
+		location_for_tweet = classify_tweet(tweet)
+		file.write(location_for_tweet + ' ' + tweet)
+		
+		
