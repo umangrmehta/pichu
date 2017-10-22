@@ -4,7 +4,8 @@ import sys
 from collections import Counter
 import copy
 import re
-import subprocess 
+import subprocess
+import os
 
 total_tweets = 0
 locations = {}
@@ -12,7 +13,15 @@ words = {}
 
 def postProcessingWords(word):
 	processedWord=re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>\n]', '', word)
-	
+	if processedWord in nltkStopWords:
+		processedWord=''
+	if processedWord in nltkStopWords:
+		processedWord=''
+	if processedWord.endswith(nltkStemWords):
+		stemWord=next((stemWord for stemWord in nltkStemWords if processedWord.endswith(stemWord)), None)
+		processedWord.rstrip(stemWord)
+	return processedWord
+
 
 class WordLocationClassifier:
 	def __init__(self, location):
@@ -25,7 +34,10 @@ class WordLocationClassifier:
 		# Training Tweet Parsing here
 		tweet_words = process_copy.split(" ")
 		for word in tweet_words:
-			if processedWord in self.words.keys():
+			processedWord=postProcessingWords(word)
+			if processedWord == '':
+				continue
+			elif processedWord in self.words.keys():
 				self.words[processedWord] += 1
 				words[processedWord] += 1
 			else:
@@ -89,24 +101,31 @@ def classify_tweet(tweet):
 			final_location = key
 	return final_location
 
-trainingFile=sys.argv[1]
-testingFile=sys.argv[2]
-outputFile=sys.argv[3]
+#trainingFile=sys.argv[1]
+#testingFile=sys.argv[2]
+#outputFile=sys.argv[3]
+trainingFile='train.txt'
+testingFile='tweets.test2.txt'
+outputFile='outputFile.txt'
 tweets = []
 
 #https://gist.github.com/sebleier/554280
 #https://piazza.com/class/j6lbw30o3z35cw?cid=233
 nltkStopWords=['i','me','my','myself','we','our','ours','ourselves','you','your','yours','yourself','yourselves','he','him','his','himself','she','her','hers','herself','it','its','itself','they','them','their','theirs','themselves','what','which','who','whom','this','that','these','those','am','is','are','was','were','be','been','being','have','has','had','having','do','does','did','doing','a','an','the','and','but','if','or','because','as','until','while','of','at','by','for','with','about','against','between','into','through','during','before','after','above','below','to','from','up','down','in','out','on','off','over','under','again','further','then','once','here','there','when','where','why','how','all','any','both','each','few','more','most','other','some','such','no','nor','not','only','own','same','so','than','too','very','s','t','can','will','just','don','should','now']
-nltkStemWords=['ing','ed','s','er']
+nltkStemWords=('ing','ed','s','er')
 #https://piazza.com/class/j6lbw30o3z35cw?cid=258
-commandTrain='cat '+trainingFile+' | tr \'\200-\377\' \' \' | tr \'\\r\' \' \' > '+trainingFile+'.clean'
-commandTest='cat '+testingFile+' | tr \'\200-\377\' \' \' | tr \'\\r\' \' \' > '+testingFile+'.clean'
-subprocess.call(commandTrain, shell=True)
-subprocess.call(commandTest, shell=True)
+
+cwd = os.getcwd()
+commandTrain='cat '+cwd+'/'+trainingFile+' | tr \'\200-\377\' \' \' | tr \'\\r\' \' \' > '+cwd+'/'+trainingFile+'.clean'
+commandTest='cat '+cwd+'/'+testingFile+' | tr \'\200-\377\' \' \' | tr \'\\r\' \' \' > '+cwd+'/'+testingFile+'.clean'
+processTrain = subprocess.Popen(commandTrain, shell=True, stdout=subprocess.PIPE)
+outTrain,errTrain = processTrain.communicate()
+processTest = subprocess.Popen(commandTest, shell=True, stdout=subprocess.PIPE)
+outTest,errTest = processTest.communicate()
 pattern = re.compile(r'.*,_[A-Z][A-Z]\s')
 
-trainFile=trainingFile+'.clean'
-testFile=testingFile+'.clean'
+trainFile=cwd+'/'+trainingFile+'.clean'
+testFile=cwd+'/'+testingFile+'.clean'
 
 train=open(trainFile,'r')
 for line in train:
