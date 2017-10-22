@@ -58,8 +58,9 @@ class WordLocationClassifier:
 		top5 = {}
 		while len(top5) < 5:
 			top = {k: v for k, v in location_scores.items() if v == max(location_scores.values())}
-			top5 += top
-			location_scores -= top
+			top5.update(top)
+			for key in top.keys():
+				location_scores.pop(key)
 		return top5
 
 
@@ -153,7 +154,7 @@ for tweet in tweets :
 	tweet_tokens = tweet.split(" ")
 	if tweet_tokens[0] in locations.keys() :
 		classifier = locations[tweet_tokens[0]]
-	else :
+	else:
 		classifier = WordLocationClassifier(tweet_tokens[0])
 		locations[tweet_tokens[0]] = classifier
 	classifier.parse(" ".join(tweet_tokens[1:]))
