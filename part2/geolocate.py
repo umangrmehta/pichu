@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 # Authors: Umang Mehta, Samanvitha Pradhan & Vaishnavi Srinivasan
 import sys
 from collections import Counter
@@ -84,7 +84,7 @@ def classify_tweet(tweet):
 		processedWord.append(postProcessingWords(word))
 	for location,classifier in locations.items():
 		for word in processedWord:
-			locationPerWord += location_for_word_score(word, location)
+			locationPerWord += location_for_word_score(word, classifier)
 			testLocations[location] = locationPerWord
 	return [k for k, v in testLocations.items() if v == max(testLocations.values())][0]
 
@@ -139,8 +139,8 @@ for line in test:
 
 output = open(outFile,"w+")
 for tweet in tweets :
-	testLocation=classify_tweet(tweets)
-	file.write(testLocation + ' ' + tweet)
+	testLocation=classify_tweet(tweet)
+	output.write(testLocation + ' ' + tweet)
 
 for location in locations.keys():
 	classifier = locations[location]
