@@ -10,6 +10,9 @@ total_tweets = 0
 locations = {}
 words = {}
 
+def postProcessingWords(word):
+	processedWord=re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>\n]', '', word)
+	
 
 class WordLocationClassifier:
 	def __init__(self, location):
@@ -19,12 +22,9 @@ class WordLocationClassifier:
 
 	def parse(self, tweet):
 		process_copy = copy.deepcopy(tweet)
-		# TODO: Training Tweet Pre-processing
-
 		# Training Tweet Parsing here
 		tweet_words = process_copy.split(" ")
 		for word in tweet_words:
-			processedWord=re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>\n]', '', word)
 			if processedWord in self.words.keys():
 				self.words[processedWord] += 1
 				words[processedWord] += 1
