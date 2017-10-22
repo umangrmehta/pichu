@@ -9,7 +9,7 @@ def findPos(board, charToBeFound):
 	return [(row, col) for col in range(0, 8, 1) for row in range(0, 8, 1) if board[row][col] == charToBeFound]
 
 
-def updatePos(board, xPos1, yPos1, xPos2, yPos2, charToReplace, message):
+def updatePos(board, xPos1, yPos1, xPos2, yPos2, charToReplace):
 	tempState = copy.deepcopy(board)
 	tempState[xPos1][yPos1] = '.'
 	tempState[xPos2][yPos2] = charToReplace
@@ -107,313 +107,293 @@ def successors(player, board):
 		colCounter = pawnPos[possiblePositions][1]
 		# move pawn down
 		if player == 'w':
-			if onBoard(rowCounter+1,colCounter):
-				if not isEnemy(player,currentState,rowCounter+1,colCounter) and not isFriend(player,currentState,rowCounter+1,colCounter):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+1, colCounter, piece(player,'pawn'), 'Pawn at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1+1)+' column '+str(colCounter+1)))
+			if onBoard(rowCounter + 1, colCounter):
+				if not isEnemy(player, currentState, rowCounter + 1, colCounter) and not isFriend(player, currentState, rowCounter + 1, colCounter):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter, piece(player, 'pawn')))
 			if rowCounter == 1:
-				if not isFriend(player,currentState,rowCounter+1,colCounter) and not isFriend(player,currentState,rowCounter+2,colCounter):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+2, colCounter, piece(player,'pawn'), 'Pawn at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+2+1)+' column '+str(colCounter+1)))
+				if not isFriend(player, currentState, rowCounter + 1, colCounter) and not isFriend(player, currentState, rowCounter + 2, colCounter):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter, piece(player, 'pawn')))
 			# move pawn left diagonally
-			if onBoard(rowCounter+1, colCounter-1):
-				if isEnemy(player,currentState,rowCounter+1,colCounter-1):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+1, colCounter-1, piece(player,'pawn'), 'Pawn at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1+1)+' column '+str(colCounter-1+1)))
+			if onBoard(rowCounter + 1, colCounter - 1):
+				if isEnemy(player, currentState, rowCounter + 1, colCounter - 1):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 1, piece(player, 'pawn')))
 			# move pawn right diagonally
-			if onBoard(rowCounter+1, colCounter+1):
-				if isEnemy(player,currentState,rowCounter+1,colCounter+1):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+1, colCounter+1, piece(player,'pawn'), 'Pawn at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1+1)+' column '+str(colCounter+1+1)))
+			if onBoard(rowCounter + 1, colCounter + 1):
+				if isEnemy(player, currentState, rowCounter + 1, colCounter + 1):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 1, piece(player, 'pawn')))
 		if player == 'b':
 			# move pawn up
-			if onBoard(rowCounter-1, colCounter):
-				if not isEnemy(player, currentState, rowCounter-1, colCounter) and not isFriend(player, currentState, rowCounter-1, colCounter):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-1, colCounter, piece(player,'pawn'), 'Pawn at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-1+1)+' column '+str(colCounter+1)))
+			if onBoard(rowCounter - 1, colCounter):
+				if not isEnemy(player, currentState, rowCounter - 1, colCounter) and not isFriend(player, currentState, rowCounter - 1, colCounter):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter, piece(player, 'pawn')))
 			if rowCounter == 6:
-				if not isFriend(player,currentState,rowCounter-1,colCounter) and not isFriend(player,currentState,rowCounter-2,colCounter):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-2, colCounter, piece(player,'pawn'), 'Pawn at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-2+1)+' column '+str(colCounter+1)))
+				if not isFriend(player, currentState, rowCounter - 1, colCounter) and not isFriend(player, currentState, rowCounter - 2, colCounter):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter, piece(player, 'pawn')))
 			# move pawn left diagonally
-			if onBoard(colCounter-1,rowCounter-1) >= 0:
-				if isEnemy(player,currentState,rowCounter-1,colCounter-1):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-1, colCounter-1, piece(player,'pawn'), 'Pawn at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-1+1)+' column '+str(colCounter-1+1)))
+			if onBoard(colCounter - 1, rowCounter - 1) >= 0:
+				if isEnemy(player, currentState, rowCounter - 1, colCounter - 1):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 1, piece(player, 'pawn')))
 			# move pawn right diagonally
-			if onBoard(colCounter+1,rowCounter-1):
-				if isEnemy(player,currentState,rowCounter-1,colCounter+1):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-1, colCounter+1, piece(player,'pawn'), 'Pawn at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-1+1)+' column '+str(colCounter+1+1)))
+			if onBoard(colCounter + 1, rowCounter - 1):
+				if isEnemy(player, currentState, rowCounter - 1, colCounter + 1):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 1, piece(player, 'pawn')))
+
 	# each successor for rook
-	rookPos = findPos(currentState, piece(player,'rook'))
+	rookPos = findPos(currentState, piece(player, 'rook'))
 	for possiblePositions in range(0, len(rookPos), 1):
 		rowCounter = rookPos[possiblePositions][0]
 		colCounter = rookPos[possiblePositions][1]
 		# move rook up
-		for i in range(rowCounter-1, -1, -1):
-			if isFriend(player,currentState,i,colCounter):
+		for i in range(rowCounter - 1, -1, -1):
+			if isFriend(player, currentState, i, colCounter):
 				break
-			elif isEnemy(player,currentState,i,colCounter):
-				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player,'rook'),'Rook at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(i+1)+' column '+str(colCounter+1)))
+			elif isEnemy(player, currentState, i, colCounter):
+				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player, 'rook')))
 				break
 			elif not isFriend(player,currentState,i,colCounter):
-				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player,'rook'),'Rook at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(i+1)+' column '+str(colCounter+1)))
-			else:
-				pass
+				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player, 'rook')))
+
 		# move rook down
-		for i in range(rowCounter+1, 8, 1):
-			if isFriend(player,currentState,i,colCounter):
+		for i in range(rowCounter + 1, 8, 1):
+			if isFriend(player, currentState, i, colCounter):
 				break
-			elif isEnemy(player,currentState,i,colCounter):
-				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player,'rook'),'Rook at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(i+1)+' column '+str(colCounter+1)))
+			elif isEnemy(player, currentState, i, colCounter):
+				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player, 'rook')))
 				break
-			elif not isEnemy(player,currentState,i,colCounter):
-				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player,'rook'),'Rook at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(i+1)+' column '+str(colCounter+1)))
-			else:
-				pass
+			elif not isEnemy(player, currentState, i, colCounter):
+				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player, 'rook')))
+
 		# move rook left
-		for i in range(colCounter-1, -1, -1):
-			if isFriend(player,currentState,rowCounter,i):
+		for i in range(colCounter - 1, -1, -1):
+			if isFriend(player, currentState, rowCounter, i):
 				break
-			elif isEnemy(player,currentState,rowCounter,i):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player,'rook'),'Rook at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1)+' column '+str(i+1)))
+			elif isEnemy(player, currentState, rowCounter, i):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player, 'rook')))
 				break
-			elif not isFriend(player,currentState,rowCounter,i):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player,'rook'),'Rook at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1)+' column '+str(i+1)))
-			else:
-				pass
+			elif not isFriend(player, currentState, rowCounter, i):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player, 'rook')))
+
 		# move rook right
-		for i in range(colCounter+1, 8, 1):
-			if isFriend(player,currentState,rowCounter,i):
+		for i in range(colCounter + 1, 8, 1):
+			if isFriend(player, currentState, rowCounter, i):
 				break
-			elif isEnemy(player,currentState,rowCounter,i):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player,'rook'),'Rook at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1)+' column '+str(i+1)))
+			elif isEnemy(player, currentState, rowCounter, i):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player, 'rook')))
 				break
-			elif not isFriend(player,currentState,rowCounter,i):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player,'rook'),'Rook at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1)+' column '+str(i+1)))
-			else:
-				pass
+			elif not isFriend(player, currentState, rowCounter, i):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player, 'rook')))
+
 	# each successor for bishop
-	bishopPos = findPos(currentState, piece(player,'bishop'))
+	bishopPos = findPos(currentState, piece(player, 'bishop'))
 	for possiblePositions in range(0, len(bishopPos), 1):
 		rowCounter = bishopPos[possiblePositions][0]
 		colCounter = bishopPos[possiblePositions][1]
 		# move bishop to the left
 		for r in range(rowCounter, -1, -1):
-			if onBoard(rowCounter-r,colCounter-r):
-				if isFriend(player,currentState,rowCounter-r,colCounter-r):
+			if onBoard(rowCounter - r, colCounter - r):
+				if isFriend(player, currentState, rowCounter - r, colCounter - r):
 					break
-				elif isEnemy(player,currentState,rowCounter-r,colCounter-r):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-r, colCounter-r, piece(player,'bishop'),'Bishop at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-r+1)+' column '+str(colCounter-r+1)))
+				elif isEnemy(player, currentState, rowCounter - r, colCounter - r):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, piece(player, 'bishop')))
 					break
-				elif not isFriend(player,currentState,rowCounter-r,colCounter-r):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-r, colCounter-r, piece(player,'bishop'),'Bishop at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-r+1)+' column '+str(colCounter-r+1)))
-				else:
-					pass
+				elif not isFriend(player, currentState, rowCounter - r, colCounter - r):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, piece(player, 'bishop')))
+
 		i = 1
 		for r in range(rowCounter, 8, 1):
-			if onBoard(rowCounter+i,colCounter+i):
-				if isFriend(player,currentState,rowCounter+i,colCounter+i):
+			if onBoard(rowCounter + i, colCounter + i):
+				if isFriend(player, currentState, rowCounter + i, colCounter + i):
 					break
-				elif isEnemy(player,currentState,rowCounter+i,colCounter+i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+i, colCounter+i, piece(player,'bishop'),'Bishop at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+i+1)+' column '+str(colCounter+i+1)))
+				elif isEnemy(player, currentState, rowCounter + i, colCounter + i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, piece(player, 'bishop')))
 					break
-				elif not isFriend(player,currentState,rowCounter+i,colCounter+i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+i, colCounter+i, piece(player,'bishop'),'Bishop at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+i+1)+' column '+str(colCounter+i+1)))
-				else:
-					pass
+				elif not isFriend(player, currentState, rowCounter + i, colCounter + i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, piece(player, 'bishop')))
 				i += 1
 		i = 0
 		# move bishop to the right
 		for r in range(rowCounter, -1, -1):
-			if onBoard(rowCounter-i,colCounter+i):
-				if isFriend(player,currentState,rowCounter-i,colCounter+i):
+			if onBoard(rowCounter - i, colCounter + i):
+				if isFriend(player, currentState, rowCounter - i, colCounter + i):
 					break
-				elif isEnemy(player,currentState,rowCounter-i,colCounter+i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-i, colCounter+i, piece(player,'bishop'),'Bishop at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-i+1)+' column '+str(colCounter+i+1)))
+				elif isEnemy(player, currentState, rowCounter - i, colCounter + i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, piece(player, 'bishop')))
 					break
-				elif not isFriend(player,currentState,rowCounter-i,colCounter+i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-i, colCounter+i, piece(player,'bishop'),'Bishop at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-i+1)+' column '+str(colCounter+i+1)))
-				else:
-					pass
+				elif not isFriend(player, currentState, rowCounter - i, colCounter + i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, piece(player, 'bishop')))
 				i += 1
 		i = 1
 		for r in range(rowCounter, 8, 1):
-			if onBoard(rowCounter+i,colCounter-i):
-				if isFriend(player,currentState,rowCounter+i,colCounter-i):
+			if onBoard(rowCounter + i, colCounter - i):
+				if isFriend(player, currentState, rowCounter + i, colCounter - i):
 					break
-				elif isEnemy(player,currentState,rowCounter+i,colCounter-i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+i, colCounter-i, piece(player,'bishop'),'Bishop at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+i+1)+' column '+str(colCounter-i+1)))
+				elif isEnemy(player, currentState, rowCounter + i, colCounter - i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, piece(player, 'bishop')))
 					break
-				elif not isFriend(player,currentState,rowCounter+i,colCounter-i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+i, colCounter-i, piece(player,'bishop'),'Bishop at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+i+1)+' column '+str(colCounter-i+1)))
-				else:
-					pass
+				elif not isFriend(player, currentState, rowCounter + i, colCounter - i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, piece(player, 'bishop')))
 				i += 1
+
 	# each successor for queen
-	queenPos = findPos(currentState, piece(player,'queen'))
+	queenPos = findPos(currentState, piece(player, 'queen'))
 	for possiblePositions in range(0, len(queenPos), 1):
 		rowCounter = queenPos[possiblePositions][0]
 		colCounter = queenPos[possiblePositions][1]
 		# move queen to the left
 		for r in range(rowCounter, -1, -1):
-			if onBoard(rowCounter-r,colCounter-r):
-				if isFriend(player,currentState,rowCounter-r,colCounter-r):
+			if onBoard(rowCounter - r, colCounter - r):
+				if isFriend(player, currentState, rowCounter - r, colCounter - r):
 					break
-				elif isEnemy(player,currentState,rowCounter-r,colCounter-r):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-r, colCounter-r, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-r+1)+' column '+str(colCounter-r+1)))
+				elif isEnemy(player, currentState, rowCounter - r, colCounter - r):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, piece(player, 'queen')))
 					break
-				elif not isFriend(player,currentState,rowCounter-r,colCounter-r):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-r, colCounter-r, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-r+1)+' column '+str(colCounter-r+1)))
-				else:
-					pass
+				elif not isFriend(player, currentState, rowCounter - r, colCounter - r):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - r, colCounter - r, piece(player, 'queen')))
+
 		i = 1
 		for r in range(rowCounter, 8, 1):
-			if onBoard(rowCounter+i,colCounter+i):
-				if isFriend(player,currentState,rowCounter+i,colCounter+i):
+			if onBoard(rowCounter + i, colCounter + i):
+				if isFriend(player, currentState, rowCounter + i, colCounter + i):
 					break
-				elif isEnemy(player,currentState,rowCounter+i,colCounter+i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+i, colCounter+i, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+i+1)+' column '+str(colCounter+i+1)))
+				elif isEnemy(player, currentState, rowCounter + i, colCounter + i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, piece(player, 'queen')))
 					break
-				elif not isFriend(player,currentState,rowCounter+i,colCounter+i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+i, colCounter+i, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+i+1)+' column '+str(colCounter+i+1)))
-				else:
-					pass
+				elif not isFriend(player, currentState, rowCounter + i, colCounter + i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter + i, piece(player, 'queen')))
 				i += 1
 		i = 0
 		# move queen to the right
 		for r in range(rowCounter, -1, -1):
-			if onBoard(rowCounter-i,colCounter+i):
-				if isFriend(player,currentState,rowCounter-i,colCounter+i):
+			if onBoard(rowCounter - i, colCounter + i):
+				if isFriend(player, currentState, rowCounter - i, colCounter + i):
 					break
-				elif isEnemy(player,currentState,rowCounter-i,colCounter+i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-i, colCounter+i, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-i+1)+' column '+str(colCounter+i+1)))
+				elif isEnemy(player, currentState, rowCounter - i, colCounter + i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, piece(player, 'queen')))
 					break
-				elif not isFriend(player,currentState,rowCounter-i,colCounter+i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-i, colCounter+i, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-i+1)+' column '+str(colCounter+i+1)))
-				else:
-					pass
+				elif not isFriend(player, currentState, rowCounter - i, colCounter + i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - i, colCounter + i, piece(player, 'queen')))
 				i += 1
 		i = 1
 		for r in range(rowCounter, 8, 1):
-			if onBoard(rowCounter+i,colCounter-i):
-				if isFriend(player,currentState,rowCounter+i,colCounter-i):
+			if onBoard(rowCounter + i, colCounter - i):
+				if isFriend(player, currentState, rowCounter + i, colCounter - i):
 					break
-				elif isEnemy(player,currentState,rowCounter+i,colCounter-i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+i, colCounter-i, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+i+1)+' column '+str(colCounter-i+1)))
+				elif isEnemy(player, currentState, rowCounter + i, colCounter - i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, piece(player, 'queen')))
 					break
-				elif not isFriend(player,currentState,rowCounter+i,colCounter-i):
-					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+i, colCounter-i, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+i+1)+' column '+str(colCounter-i+1)))
-				else:
-					pass
+				elif not isFriend(player, currentState, rowCounter + i, colCounter - i):
+					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + i, colCounter - i, piece(player, 'queen')))
 				i += 1
 		# move queen up
-		for i in range(rowCounter-1, -1, -1):
-			if isFriend(player,currentState,i,colCounter):
-				break
-			elif isEnemy(player,currentState,i,colCounter):
-				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(i+1)+' column '+str(colCounter+1)))
-				break
-			elif not isFriend(player,currentState,i,colCounter):
-				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(i+1)+' column '+str(colCounter+1)))
-			else:
-				pass
-		# move queen down
-		for i in range(rowCounter+1, 8, 1):
+		for i in range(rowCounter - 1, -1, -1):
 			if isFriend(player, currentState, i, colCounter):
 				break
 			elif isEnemy(player, currentState, i, colCounter):
-				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(i+1)+' column '+str(colCounter+1)))
+				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player, 'queen')))
 				break
 			elif not isFriend(player, currentState, i, colCounter):
-				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(i+1)+' column '+str(colCounter+1)))
-			else:
-				pass
+				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player, 'queen')))
+
+		# move queen down
+		for i in range(rowCounter + 1, 8, 1):
+			if isFriend(player, currentState, i, colCounter):
+				break
+			elif isEnemy(player, currentState, i, colCounter):
+				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player, 'queen')))
+				break
+			elif not isFriend(player, currentState, i, colCounter):
+				successor.append(updatePos(currentState, rowCounter, colCounter, i, colCounter, piece(player, 'queen')))
+
 		# move queen left
-		for i in range(colCounter-1, -1, -1):
+		for i in range(colCounter - 1, -1, -1):
 			if isFriend(player, currentState, rowCounter, i):
 				break
 			elif isEnemy(player, currentState, rowCounter, i):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1)+' column '+str(i+1)))
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player, 'queen')))
 				break
 			elif not isFriend(player, currentState, rowCounter, i):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1)+' column '+str(i+1)))
-			else:
-				pass
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player, 'queen')))
+
 		# move queen right
-		for i in range(colCounter+1, 8, 1):
+		for i in range(colCounter + 1, 8, 1):
 			if isFriend(player, currentState, rowCounter, i):
 				break
 			elif isEnemy(player, currentState, rowCounter, i):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1)+' column '+str(i+1)))
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player, 'queen')))
 				break
 			elif not isFriend(player, currentState, rowCounter, i):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player,'queen'),'Queen at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1)+' column '+str(i+1)))
-			else:
-				pass
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, i, piece(player, 'queen')))
+
 	# each successor for king
 	kingPos = findPos(currentState, piece(player, 'king'))
 	for possiblePositions in range(0, len(kingPos), 1):
 		rowCounter = kingPos[possiblePositions][0]
 		colCounter = kingPos[possiblePositions][1]
 		# move king up
-		if onBoard(rowCounter-1,colCounter):
-			if isEnemy(player,currentState,rowCounter-1,colCounter) or not isFriend(player,currentState,rowCounter-1,colCounter):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-1, colCounter, piece(player,'king'),'King at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-1+1)+' column '+str(colCounter+1)))
+		if onBoard(rowCounter - 1, colCounter):
+			if isEnemy(player, currentState, rowCounter - 1, colCounter) or not isFriend(player, currentState, rowCounter - 1, colCounter):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter, piece(player, 'king')))
 		# move king down
-		if onBoard(rowCounter+1,colCounter):
-			if isEnemy(player,currentState,rowCounter+1,colCounter) or not isFriend(player,currentState,rowCounter+1,colCounter):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+1, colCounter, piece(player,'king'),'King at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1+1)+' column '+str(colCounter+1)))
+		if onBoard(rowCounter + 1, colCounter):
+			if isEnemy(player, currentState, rowCounter + 1, colCounter) or not isFriend(player, currentState, rowCounter + 1, colCounter):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter, piece(player, 'king')))
 		# move king left
-		if onBoard(rowCounter,colCounter-1):
-			if isEnemy(player,currentState,rowCounter,colCounter-1) or not isFriend(player,currentState,rowCounter,colCounter-1):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter-1, piece(player,'king'),'King at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1)+' column '+str(colCounter-1+1)))
+		if onBoard(rowCounter, colCounter - 1):
+			if isEnemy(player, currentState, rowCounter, colCounter - 1) or not isFriend(player, currentState, rowCounter, colCounter - 1):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter - 1, piece(player, 'king')))
 		# move king right
-		if onBoard(rowCounter,colCounter+1):
-			if isEnemy(player,currentState,rowCounter,colCounter+1) or not isFriend(player,currentState,rowCounter,colCounter+1):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter+1, piece(player,'king'),'King at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1)+' column '+str(colCounter+1+1)))
+		if onBoard(rowCounter, colCounter + 1):
+			if isEnemy(player, currentState, rowCounter, colCounter + 1) or not isFriend(player, currentState, rowCounter, colCounter + 1):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter, colCounter + 1, piece(player, 'king')))
 		# move king left diagonally down
-		if onBoard(rowCounter+1,colCounter-1):
-			if isEnemy(player,currentState,rowCounter+1,colCounter-1) or not isFriend(player,currentState,rowCounter+1,colCounter-1):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+1, colCounter-1, piece(player,'king'),'King at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-1+1)+' column '+str(colCounter-1+1)))
+		if onBoard(rowCounter + 1, colCounter - 1):
+			if isEnemy(player, currentState, rowCounter + 1, colCounter - 1) or not isFriend(player, currentState, rowCounter + 1, colCounter - 1):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 1, piece(player, 'king')))
 		# move king right diagonally down
-		if onBoard(rowCounter+1,colCounter+1):
-			if isEnemy(player,currentState,rowCounter+1,colCounter+1) or not isFriend(player,currentState,rowCounter+1,colCounter+1):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+1, colCounter+1, piece(player,'king'),'King at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1+1)+' column '+str(colCounter+1+1)))
+		if onBoard(rowCounter + 1, colCounter + 1):
+			if isEnemy(player, currentState, rowCounter + 1, colCounter + 1) or not isFriend(player, currentState, rowCounter + 1, colCounter + 1):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 1, piece(player, 'king')))
 		# move king left diagonally up
-		if onBoard(rowCounter-1,colCounter-1):
-			if isEnemy(player,currentState,rowCounter-1,colCounter-1) or not isFriend(player,currentState,rowCounter-1,colCounter-1):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-1, colCounter-1, piece(player,'king'),'King at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-1+1)+' column '+str(colCounter-1+1)))
+		if onBoard(rowCounter - 1, colCounter - 1):
+			if isEnemy(player, currentState, rowCounter - 1, colCounter -  1) or not isFriend(player, currentState, rowCounter - 1, colCounter - 1):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 1, piece(player, 'king')))
 		# move king right diagonally up
-		if onBoard(rowCounter-1,colCounter+1):
-			if isEnemy(player,currentState,rowCounter-1,colCounter+1) or not isFriend(player,currentState,rowCounter-1,colCounter+1):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-1, colCounter+1, piece(player,'king'),'King at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-1+1)+' column '+str(colCounter+1+1)))
+		if onBoard(rowCounter - 1, colCounter + 1):
+			if isEnemy(player, currentState, rowCounter - 1, colCounter + 1) or not isFriend(player, currentState, rowCounter - 1, colCounter + 1):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 1, piece(player, 'king')))
 	# each successor for knight
-	knightPos = findPos(currentState, piece(player,'knight'))
+	knightPos = findPos(currentState, piece(player, 'knight'))
 	for possiblePositions in range(0, len(knightPos), 1):
 		rowCounter = knightPos[possiblePositions][0]
 		colCounter = knightPos[possiblePositions][1]
 		# move knight up right L
-		if onBoard(rowCounter-1,colCounter+2):
-			if isEnemy(player,currentState,rowCounter-1,colCounter+2) or not isFriend(player,currentState,rowCounter-1,colCounter+2):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-1, colCounter+2, piece(player,'knight'),'Knight at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-1+1)+' column '+str(colCounter+1+2)))
-		if onBoard(rowCounter-2,colCounter+1):
-			if isEnemy(player,currentState,rowCounter-2,colCounter+1) or not isFriend(player,currentState,rowCounter-2,colCounter+1):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-2, colCounter+1, piece(player,'knight'),'Knight at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-2+1)+' column '+str(colCounter+1+1)))
+		if onBoard(rowCounter - 1, colCounter + 2):
+			if isEnemy(player, currentState, rowCounter - 1, colCounter + 2) or not isFriend(player, currentState, rowCounter - 1, colCounter + 2):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter + 2, piece(player, 'knight')))
+		if onBoard(rowCounter - 2, colCounter + 1):
+			if isEnemy(player, currentState, rowCounter - 2, colCounter + 1) or not isFriend(player, currentState, rowCounter - 2, colCounter + 1):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter + 1, piece(player, 'knight')))
 		# move knight up left L
-		if onBoard(rowCounter-1,colCounter-2):
-			if isEnemy(player,currentState,rowCounter-1,colCounter-2) or not isFriend(player,currentState,rowCounter-1,colCounter-2):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-1, colCounter-2, piece(player,'knight'),'Knight at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-1+1)+' column '+str(colCounter+1-2)))
-		if onBoard(rowCounter-2,colCounter+1):
-			if isEnemy(player,currentState,rowCounter-2,colCounter-1) or not isFriend(player,currentState,rowCounter-2,colCounter-1):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-2, colCounter-1, piece(player,'knight'),'Knight at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-2+1)+' column '+str(colCounter+1+1)))
+		if onBoard(rowCounter - 1, colCounter - 2):
+			if isEnemy(player, currentState, rowCounter - 1, colCounter - 2) or not isFriend(player, currentState, rowCounter - 1, colCounter - 2):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 1, colCounter - 2, piece(player, 'knight')))
+		if onBoard(rowCounter - 2, colCounter + 1):
+			if isEnemy(player, currentState, rowCounter - 2, colCounter - 1) or not isFriend(player, currentState, rowCounter - 2, colCounter - 1):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter - 2, colCounter - 1, piece(player, 'knight')))
 		# move knight down left L
-		if onBoard(rowCounter+2,colCounter+1):
-			if isEnemy(player,currentState,rowCounter+2,colCounter+1) or not isFriend(player,currentState,rowCounter+2,colCounter+1):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+2, colCounter+1, piece(player,'knight'),'Knight at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+2+1)+' column '+str(colCounter+1+1)))
-		if onBoard(rowCounter+1,colCounter+2):
-			if isEnemy(player,currentState,rowCounter+1,colCounter+2) or not isFriend(player,currentState,rowCounter+1,colCounter+2):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+1, colCounter+2, piece(player,'knight'),'Knight at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1+1)+' column '+str(colCounter+1+2)))
+		if onBoard(rowCounter + 2, colCounter + 1):
+			if isEnemy(player, currentState, rowCounter + 2, colCounter + 1) or not isFriend(player, currentState, rowCounter + 2, colCounter + 1):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter + 1, piece(player, 'knight')))
+		if onBoard(rowCounter + 1, colCounter + 2):
+			if isEnemy(player, currentState, rowCounter+1, colCounter + 2) or not isFriend(player, currentState, rowCounter + 1, colCounter + 2):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter + 2, piece(player, 'knight')))
 		# move knight down left L
-		if onBoard(rowCounter+2,colCounter-1):
-			if isEnemy(player,currentState,rowCounter+2,colCounter-1) or not isFriend(player,currentState,rowCounter+2,colCounter-1):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+2, colCounter-1, piece(player,'knight'),'Knight at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+2+1)+' column '+str(colCounter+1-1)))
-		if onBoard(rowCounter+1,colCounter-2):
-			if isEnemy(player,currentState,rowCounter+1,colCounter-2) or not isFriend(player,currentState,rowCounter+1,colCounter-2):
-				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+1, colCounter-2, piece(player,'knight'),'Knight at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1+1)+' column '+str(colCounter+1-2)))
+		if onBoard(rowCounter + 2, colCounter - 1):
+			if isEnemy(player, currentState, rowCounter + 2, colCounter - 1) or not isFriend(player, currentState, rowCounter + 2, colCounter - 1):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 2, colCounter - 1, piece(player, 'knight')))
+		if onBoard(rowCounter + 1, colCounter - 2):
+			if isEnemy(player, currentState, rowCounter + 1, colCounter - 2) or not isFriend(player, currentState, rowCounter + 1, colCounter - 2):
+				successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter + 1, colCounter - 2, piece(player, 'knight')))
 	return successor
 
 
@@ -467,7 +447,7 @@ if firstPlayer == "w":
 else:
 	enemyPlayer = "w"
 
-horizon = 3
+horizon = 4
 
 for counter in range(0, len(initialPosition), 1):
 	inputBoard.append(initialPosition[counter])
