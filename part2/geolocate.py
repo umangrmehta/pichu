@@ -54,14 +54,12 @@ class WordLocationClassifier:
 			location_scores[word] = location_for_word_score(word, self)
 
 		top5 = {}
-		print(self.location)
 		while len(top5) < 5:
 			top = {k: v for k, v in location_scores.items() if v == max(location_scores.values())}
-			print(top)
 			top5.update(top)
 			for key in top.keys():
 				location_scores.pop(key)
-		return top5
+		return top5.keys()[:5]
 
 
 # Returns ln(P(L|w)) for the given Location and Word
@@ -81,8 +79,7 @@ def classify_tweet(tweet):
 	testLocations={}
 	process_copy = copy.deepcopy(tweet)
 	tweet_words = process_copy.split(" ")
-	tweetLocation=tweet_words[0]
-	for word in tweet_words[1:] :
+	for word in tweet_words[1:]:
 		processedWord.append(postProcessingWords(word))
 	for location,classifier in locations.items():
 		for word in processedWord:
@@ -132,20 +129,25 @@ for tweet in tweets :
 	classifier.parse(" ".join(tweet_tokens[1:]))
 	totalWordOccurrence += len(tweet_tokens) - 1
 
-tweets=[]
+tweets = []
 test = open(testFile, 'r')
 for line in test:
 	line = line.lower()
 	tweets.append(line)
 
-
+correctCount = 0
 output = open(outFile, "w+")
 for tweet in tweets:
-	testLocation = classify_tweet(tweet)
+	tweet_tokens = tweet.split(" ")
+	tweetLocation = tweet_tokens[0]
+	testLocation = classify_tweet(" ".join(tweet_tokens))
 	output.write(testLocation + ' ' + tweet)
+	if testLocation == tweetLocation:
+		correctCount += 1
 
 for location in locations.keys():
 	classifier = locations[location]
 	locationTop5 = classifier.top_5_words()
-# 	print(location + ": " + str(locationTop5.keys()))
-# 	print(locationTop5)
+	print(location + ": " + str(locationTop5))
+
+print("Accuracy: " + str(correctCount * 100.0 / len(tweets)))
