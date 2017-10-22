@@ -6,6 +6,7 @@ import copy
 import re
 import subprocess
 import os
+import math
 
 total_tweets = 0
 locations = {}
@@ -62,14 +63,14 @@ class WordLocationClassifier:
 		return top5
 
 
-# Returns P(L|w) for the given Location and Word
+# Returns ln(P(L|w)) for the given Location and Word
 def location_for_word_score(word, location_classifier):
-	# TODO: Calculate and Return P(L|w) using location_classifier
+	# TODO: Calculate and Return ln(P(L|w)) using location_classifier
 	if word in location_classifier.words.keys() and word in words.keys():
-		prob_word_given_location = location_classifier.words[word] / location_classifier.tweetCount
-		prob_word = words[word] / total_tweets
-		return prob_word_given_location / prob_word
-	return 0;
+		prob_word_given_location = math.log(location_classifier.words[word]) - math.log(location_classifier.tweetCount)
+		prob_word = math.log(words[word]) - math.log(total_tweets)
+		return prob_word_given_location - prob_word
+	return 0
 
 
 # Classify Tweet based on Prior Knowledge
@@ -136,7 +137,7 @@ for tweet in tweets :
 	tweet_tokens = tweet.split(" ")
 	if tweet_tokens[0] in locations.keys() :
 		classifier = locations[tweet_tokens[0]]
-	else :
+	else:
 		classifier = WordLocationClassifier(tweet_tokens[0])
 		locations[tweet_tokens[0]] = classifier
 	classifier.parse(" ".join(tweet_tokens[1:]))
