@@ -54,8 +54,10 @@ class WordLocationClassifier:
 			location_scores[word] = location_for_word_score(word, self)
 
 		top5 = {}
+		print(self.location)
 		while len(top5) < 5:
 			top = {k: v for k, v in location_scores.items() if v == max(location_scores.values())}
+			print(top)
 			top5.update(top)
 			for key in top.keys():
 				location_scores.pop(key)
@@ -142,8 +144,8 @@ for tweet in tweets:
 	testLocation = classify_tweet(tweet)
 	output.write(testLocation + ' ' + tweet)
 
-for location in locations.keys():
-	classifier = locations[location]
-	locationTop5 = classifier.top_5_words()
-	print(location + ": " + str(locationTop5.keys()))
-	print(locationTop5)
+# for location in locations.keys():
+# 	classifier = locations[location]
+# 	locationTop5 = classifier.top_5_words()
+# 	print(location + ": " + str(locationTop5.keys()))
+# 	print(locationTop5)
