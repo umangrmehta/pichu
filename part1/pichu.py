@@ -13,10 +13,10 @@ def updatePos(board, xPos1, yPos1, xPos2, yPos2, charToReplace):
 	tempState = copy.deepcopy(board)
 	tempState[xPos1][yPos1] = '.'
 	tempState[xPos2][yPos2] = charToReplace
-	if xPos2 == 7 and yPos2== 7:
+	if xPos2 == 7:
 		if charToReplace == 'P':
 			tempState[xPos2][yPos2]='Q'
-	if xPos2 == 0 and yPos2== 0:
+	if xPos2 == 0:
 		if charToReplace == 'p':
 			tempState[xPos2][yPos2]='q'
 	# https://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python
