@@ -66,14 +66,14 @@ def evaluation(board):
 	if isTerminal(board):
 		if firstPlayer == 'w':
 			if ('K' in board) and not ('k' in board):
-				turnCount = 55
+				turnCount = 165
 			elif ('k' in board) and not ('K' in board):
-				turnCount = -55
+				turnCount = -165
 		elif firstPlayer == 'b':
 			if ('k' in board) and not ('K' in board):
-				turnCount = 55
+				turnCount = 165
 			elif ('K' in board) and not ('k' in board):
-				turnCount = -55
+				turnCount = -165
 	else:
 		whiteCount = 0
 		blackCount = 0
@@ -409,7 +409,7 @@ def decision():
 	# 	print(s['board'])
 	# 	print(min_value(s, -100, 100, 1))
 	if not isTerminal(inputBoard):
-		return max(successors(firstPlayer, inputBoard), key=lambda successor: minValue(successor, -100, 100, 1))
+		return max(successors(firstPlayer, inputBoard), key=lambda successor: minValue(successor, -1000, 1000, 1))
 	else:
 		if evaluation(inputBoard) > 0:
 			return "You have already Won"
