@@ -453,7 +453,7 @@ if firstPlayer == "w":
 else:
 	enemyPlayer = "w"
 
-horizon = 4
+horizon = 3
 
 for counter in range(0, len(initialPosition), 1):
 	inputBoard.append(initialPosition[counter])
