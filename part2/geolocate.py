@@ -144,8 +144,8 @@ for tweet in tweets:
 	testLocation = classify_tweet(tweet)
 	output.write(testLocation + ' ' + tweet)
 
-# for location in locations.keys():
-# 	classifier = locations[location]
-# 	locationTop5 = classifier.top_5_words()
+for location in locations.keys():
+	classifier = locations[location]
+	locationTop5 = classifier.top_5_words()
 # 	print(location + ": " + str(locationTop5.keys()))
 # 	print(locationTop5)
