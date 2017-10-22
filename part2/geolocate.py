@@ -17,8 +17,6 @@ def postProcessingWords(word):
 	processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>\n]', '', word)
 	if processedWord in nltkStopWords:
 		processedWord = ''
-	if processedWord in nltkStopWords:
-		processedWord = ''
 	if processedWord.endswith(nltkStemWords):
 		stemWord = next((stemWord for stemWord in nltkStemWords if processedWord.endswith(stemWord)), None)
 		processedWord.rstrip(stemWord)
@@ -77,23 +75,14 @@ def location_for_word_score(word, location_classifier):
 # Classify Tweet based on Prior Knowledge
 def classify_tweet(tweet):
 	process_copy = copy.deepcopy(tweet)
-	# TODO: Tweet Pre-processing
-
-	# Tweet Parsing here
 	tweet_words = process_copy.split(" ")
-
-	# Find Location with Max Score for each word and Then Find the Location with Max occurrence for Best Score
-	# Find Location with Max Score for each word
-	# for word in tweet_words:
-	# 	score = -1
-	# 	final_location_per_word = ''
-	# 	location_value_per_tweet = []
-	# 	for location in locations:
-	# 		location_per_word = location_for_word_score(word, location)
-	# 		final_location_per_word = location if location_per_word > score else final_location_per_word
-	# 	print("final" + final_location_per_word)
-	# 	location_value_per_tweet = location_value_per_tweet.append(final_location_per_word)
-	# # Find the Location with Max occurrence for Best Score
+	for word in tweet_words:
+		processedWord=postProcessingWords(word)
+	for location in locations:
+		location_per_word = location_for_word_score(word, location)
+		final_location_per_word = location if location_per_word > score else final_location_per_word
+		print("final" + final_location_per_word)
+		location_value_per_tweet = location_value_per_tweet.append(final_location_per_word)
 	# count_of_locations = Counter(location_value_per_tweet)
 	# print(count_of_locations)
 	# final_location = ''
@@ -103,11 +92,11 @@ def classify_tweet(tweet):
 	# 		final_location = key
 	# return final_location
 
-# trainingFile=sys.argv[1]
-# testingFile=sys.argv[2]
-# outputFile=sys.argv[3]
+#trainingFile=sys.argv[1]
+#testingFile=sys.argv[2]
+#outputFile=sys.argv[3]
 trainingFile='tweets.train.txt'
-testingFile='tweets.test2.txt'
+testingFile='tweets.test1.txt'
 outputFile='outputFile.txt'
 tweets = []
 
@@ -154,16 +143,16 @@ for tweet in tweets :
 	tweet_tokens = tweet.split(" ")
 	if tweet_tokens[0] in locations.keys() :
 		classifier = locations[tweet_tokens[0]]
-	else:
+	else :
 		classifier = WordLocationClassifier(tweet_tokens[0])
 		locations[tweet_tokens[0]] = classifier
 	classifier.parse(" ".join(tweet_tokens[1:]))
 
-#output = open(outFile,"w+")
-#with open(testFile,"r") as test_tweets:
-#	for tweet in test_tweets:
-#		location_for_tweet = classify_tweet(tweet)
-#		# file.write(location_for_tweet + ' ' + tweet)
+output = open(outFile,"w+")
+with open(testFile,"r") as test_tweets:
+	for tweet in test_tweets:
+		location_for_tweet = classify_tweet(tweet)
+		# file.write(location_for_tweet + ' ' + tweet)
 
 for location in locations.keys():
 	classifier = locations[location]
