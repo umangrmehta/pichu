@@ -108,7 +108,7 @@ def successors(player, board):
 		# move pawn down
 		if player == 'w':
 			if onBoard(rowCounter+1,colCounter):
-				if isEnemy(player,currentState,rowCounter+1,colCounter) or not isFriend(player,currentState,rowCounter+1,colCounter):
+				if not isEnemy(player,currentState,rowCounter+1,colCounter) and not isFriend(player,currentState,rowCounter+1,colCounter):
 					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter+1, colCounter, piece(player,'pawn'), 'Pawn at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter+1+1)+' column '+str(colCounter+1)))
 			if rowCounter == 1:
 				if not isFriend(player,currentState,rowCounter+1,colCounter) and not isFriend(player,currentState,rowCounter+2,colCounter):
@@ -124,7 +124,7 @@ def successors(player, board):
 		if player == 'b':
 			# move pawn up
 			if onBoard(rowCounter-1, colCounter):
-				if isEnemy(player, currentState, rowCounter-1, colCounter) or not isFriend(player, currentState, rowCounter-1, colCounter):
+				if not isEnemy(player, currentState, rowCounter-1, colCounter) and not isFriend(player, currentState, rowCounter-1, colCounter):
 					successor.append(updatePos(currentState, rowCounter, colCounter, rowCounter-1, colCounter, piece(player,'pawn'), 'Pawn at row '+str(rowCounter+1)+' column '+str(colCounter+1)+' to row '+str(rowCounter-1+1)+' column '+str(colCounter+1)))
 			if rowCounter == 6:
 				if not isFriend(player,currentState,rowCounter-1,colCounter) and not isFriend(player,currentState,rowCounter-2,colCounter):
