@@ -57,7 +57,7 @@ def piece(player, currPiece):
 
 
 def onBoard(x, y):
-	if 0 <= x <= 7 and  0 <= y <= 7:
+	if 0 <= x <= 7 and 0 <= y <= 7:
 		return True
 	return False
 

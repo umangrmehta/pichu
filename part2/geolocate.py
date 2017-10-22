@@ -11,14 +11,15 @@ total_tweets = 0
 locations = {}
 words = {}
 
+
 def postProcessingWords(word):
-	processedWord=re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>\n]', '', word)
+	processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>\n]', '', word)
 	if processedWord in nltkStopWords:
-		processedWord=''
+		processedWord = ''
 	if processedWord in nltkStopWords:
-		processedWord=''
+		processedWord = ''
 	if processedWord.endswith(nltkStemWords):
-		stemWord=next((stemWord for stemWord in nltkStemWords if processedWord.endswith(stemWord)), None)
+		stemWord = next((stemWord for stemWord in nltkStemWords if processedWord.endswith(stemWord)), None)
 		processedWord.rstrip(stemWord)
 	return processedWord
 
@@ -34,7 +35,7 @@ class WordLocationClassifier:
 		# Training Tweet Parsing here
 		tweet_words = process_copy.split(" ")
 		for word in tweet_words:
-			processedWord=postProcessingWords(word)
+			processedWord = postProcessingWords(word)
 			if processedWord == '':
 				continue
 			elif processedWord in self.words.keys():
@@ -78,42 +79,41 @@ def classify_tweet(tweet):
 
 	# Tweet Parsing here
 	tweet_words = process_copy.split(" ")
-	
 
 	# Find Location with Max Score for each word and Then Find the Location with Max occurrence for Best Score
 	# Find Location with Max Score for each word
-	for word in tweet_words:
-		score = -1
-		final_location_per_word = ''
-		location_value_per_tweet = []
-		for location in locations:
-			location_per_word = location_for_word_score(word,location)
-			final_location_per_word = location if location_per_word > score else final_location_per_word
-		print("final" + final_location_per_word)
-		location_value_per_tweet = location_value_per_tweet.append(final_location_per_word)
-	# Find the Location with Max occurrence for Best Score		  
-	count_of_locations = Counter(location_value_per_tweet)
-	print(count_of_locations)
-	final_location = ''
-	maximum = max(count_of_locations.values())
-	for key in count_of_locations:
-		if loc_values[key] > maximum:
-			final_location = key
-	return final_location
+	# for word in tweet_words:
+	# 	score = -1
+	# 	final_location_per_word = ''
+	# 	location_value_per_tweet = []
+	# 	for location in locations:
+	# 		location_per_word = location_for_word_score(word, location)
+	# 		final_location_per_word = location if location_per_word > score else final_location_per_word
+	# 	print("final" + final_location_per_word)
+	# 	location_value_per_tweet = location_value_per_tweet.append(final_location_per_word)
+	# # Find the Location with Max occurrence for Best Score
+	# count_of_locations = Counter(location_value_per_tweet)
+	# print(count_of_locations)
+	# final_location = ''
+	# maximum = max(count_of_locations.values())
+	# for key in count_of_locations:
+	# 	if loc_values[key] > maximum:
+	# 		final_location = key
+	# return final_location
 
-#trainingFile=sys.argv[1]
-#testingFile=sys.argv[2]
-#outputFile=sys.argv[3]
-trainingFile='train.txt'
+# trainingFile=sys.argv[1]
+# testingFile=sys.argv[2]
+# outputFile=sys.argv[3]
+trainingFile='tweets.train.txt'
 testingFile='tweets.test2.txt'
 outputFile='outputFile.txt'
 tweets = []
 
-#https://gist.github.com/sebleier/554280
-#https://piazza.com/class/j6lbw30o3z35cw?cid=233
-nltkStopWords=['i','me','my','myself','we','our','ours','ourselves','you','your','yours','yourself','yourselves','he','him','his','himself','she','her','hers','herself','it','its','itself','they','them','their','theirs','themselves','what','which','who','whom','this','that','these','those','am','is','are','was','were','be','been','being','have','has','had','having','do','does','did','doing','a','an','the','and','but','if','or','because','as','until','while','of','at','by','for','with','about','against','between','into','through','during','before','after','above','below','to','from','up','down','in','out','on','off','over','under','again','further','then','once','here','there','when','where','why','how','all','any','both','each','few','more','most','other','some','such','no','nor','not','only','own','same','so','than','too','very','s','t','can','will','just','don','should','now']
-nltkStemWords=('ing','ed','s','er')
-#https://piazza.com/class/j6lbw30o3z35cw?cid=258
+# https://gist.github.com/sebleier/554280
+# https://piazza.com/class/j6lbw30o3z35cw?cid=233
+nltkStopWords=['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now']
+nltkStemWords=('ing', 'ed', 's', 'er')
+# https://piazza.com/class/j6lbw30o3z35cw?cid=258
 
 cwd = os.getcwd()
 commandTrain='cat '+cwd+'/'+trainingFile+' | tr \'\200-\377\' \' \' | tr \'\\r\' \' \' > '+cwd+'/'+trainingFile+'.clean'
@@ -124,12 +124,12 @@ processTest = subprocess.Popen(commandTest, shell=True, stdout=subprocess.PIPE)
 outTest,errTest = processTest.communicate()
 pattern = re.compile(r'.*,_[A-Z][A-Z]\s')
 
-trainFile=cwd+'/'+trainingFile+'.clean'
-testFile=cwd+'/'+testingFile+'.clean'
+trainFile = cwd+'/'+trainingFile+'.clean'
+testFile = cwd+'/'+testingFile+'.clean'
 
-train=open(trainFile,'r')
+train = open(trainFile, 'r')
 for line in train:
-	line=line.lower()
+	line = line.lower()
 	tweets.append(line)
 
 for tweet in tweets :
@@ -145,4 +145,8 @@ output = open(sys.argv[3],"w+")
 with open(sys.argv[2],"r") as train_tweets:
 	for tweet in train_tweets:
 		location_for_tweet = classify_tweet(tweet)
-		file.write(location_for_tweet + ' ' + tweet)
+		# file.write(location_for_tweet + ' ' + tweet)
+
+for location in locations.keys():
+	classifier = locations[location]
+	print(classifier.top_5_words())
