@@ -74,23 +74,19 @@ def location_for_word_score(word, location_classifier):
 
 # Classify Tweet based on Prior Knowledge
 def classify_tweet(tweet):
+	processedWord=[]
+	locationPerWord=0
+	testLocations={}
 	process_copy = copy.deepcopy(tweet)
 	tweet_words = process_copy.split(" ")
-	for word in tweet_words:
-		processedWord=postProcessingWords(word)
-	for location in locations:
-		location_per_word = location_for_word_score(word, location)
-		final_location_per_word = location if location_per_word > score else final_location_per_word
-		print("final" + final_location_per_word)
-		location_value_per_tweet = location_value_per_tweet.append(final_location_per_word)
-	# count_of_locations = Counter(location_value_per_tweet)
-	# print(count_of_locations)
-	# final_location = ''
-	# maximum = max(count_of_locations.values())
-	# for key in count_of_locations:
-	# 	if loc_values[key] > maximum:
-	# 		final_location = key
-	# return final_location
+	tweetLocation=tweet_words[0]
+	for word in tweet_words[1:] :
+		processedWord.append(postProcessingWords(word))
+	for location,classifier in locations.items():
+		for word in processedWord:
+			locationPerWord += location_for_word_score(word, location)
+			testLocations[location] = locationPerWord
+	return [k for k, v in testLocations.items() if v == max(testLocations.values())][0]
 
 #trainingFile=sys.argv[1]
 #testingFile=sys.argv[2]
@@ -102,8 +98,8 @@ tweets = []
 
 # https://gist.github.com/sebleier/554280
 # https://piazza.com/class/j6lbw30o3z35cw?cid=233
-nltkStopWords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now']
-nltkStemWords = ('ing', 'ed', 's', 'er')
+nltkStopWords=['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now']
+nltkStemWords=('ing', 'ed', 's', 'er')
 # https://piazza.com/class/j6lbw30o3z35cw?cid=258
 
 cwd = os.getcwd()
@@ -134,25 +130,17 @@ for tweet in tweets :
 		locations[tweet_tokens[0]] = classifier
 	classifier.parse(" ".join(tweet_tokens[1:]))
 
+tweets=[]
 test = open(testFile, 'r')
 for line in test:
 	line = line.lower()
 	tweets.append(line)
 
-for tweet in tweets :
-	tweet_tokens = tweet.split(" ")
-	if tweet_tokens[0] in locations.keys() :
-		classifier = locations[tweet_tokens[0]]
-	else :
-		classifier = WordLocationClassifier(tweet_tokens[0])
-		locations[tweet_tokens[0]] = classifier
-	classifier.parse(" ".join(tweet_tokens[1:]))
 
 output = open(outFile,"w+")
-with open(testFile,"r") as test_tweets:
-	for tweet in test_tweets:
-		location_for_tweet = classify_tweet(tweet)
-		# file.write(location_for_tweet + ' ' + tweet)
+for tweet in tweets :
+	testLocation=classify_tweet(tweets)
+	file.write(testLocation + ' ' + tweet)
 
 for location in locations.keys():
 	classifier = locations[location]
