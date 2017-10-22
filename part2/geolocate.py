@@ -127,11 +127,13 @@ pattern = re.compile(r'.*,_[A-Z][A-Z]\s')
 
 trainFile = cwd+'/'+trainingFile+'.clean'
 testFile = cwd+'/'+testingFile+'.clean'
+outFile = cwd+'/'+outputFile
 
 train = open(trainFile, 'r')
 for line in train:
 	line = line.lower()
 	tweets.append(line)
+	total_tweets+=1
 
 for tweet in tweets :
 	tweet_tokens = tweet.split(" ")
@@ -142,12 +144,26 @@ for tweet in tweets :
 		locations[tweet_tokens[0]] = classifier
 	classifier.parse(" ".join(tweet_tokens[1:]))
 
-output = open(sys.argv[3],"w+")
-with open(sys.argv[2],"r") as train_tweets:
-	for tweet in train_tweets:
-		location_for_tweet = classify_tweet(tweet)
-		# file.write(location_for_tweet + ' ' + tweet)
+test = open(testFile, 'r')
+for line in test:
+	line = line.lower()
+	tweets.append(line)
 
-for location in locations.keys():
-	classifier = locations[location]
-	print(classifier.top_5_words())
+for tweet in tweets :
+	tweet_tokens = tweet.split(" ")
+	if tweet_tokens[0] in locations.keys() :
+		classifier = locations[tweet_tokens[0]]
+	else :
+		classifier = WordLocationClassifier(tweet_tokens[0])
+		locations[tweet_tokens[0]] = classifier
+	classifier.parse(" ".join(tweet_tokens[1:]))
+
+#output = open(outFile,"w+")
+#with open(testFile,"r") as test_tweets:
+#	for tweet in test_tweets:
+#		location_for_tweet = classify_tweet(tweet)
+#		# file.write(location_for_tweet + ' ' + tweet)
+#
+#for location in locations.keys():
+#	classifier = locations[location]
+#	print(classifier.top_5_words())
