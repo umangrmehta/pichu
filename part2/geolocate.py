@@ -8,7 +8,7 @@ import subprocess
 import os
 import math
 
-total_tweets = 0
+totalWordOccurrence = 0
 locations = {}
 words = {}
 
@@ -27,7 +27,7 @@ class WordLocationClassifier:
 	def __init__(self, location):
 		self.location = location
 		self.words = {}
-		self.tweetCount = 0
+		self.wordOccurrenceCount = 0
 
 	def parse(self, tweet):
 		process_copy = copy.deepcopy(tweet)
@@ -46,7 +46,7 @@ class WordLocationClassifier:
 					words[processedWord] += 1
 				else:
 					words[processedWord] = 1
-		self.tweetCount += 1
+		self.wordOccurrenceCount += len(tweet_words)
 
 	def top_5_words(self):
 		location_scores = {}
@@ -66,8 +66,8 @@ class WordLocationClassifier:
 def location_for_word_score(word, location_classifier):
 	# TODO: Calculate and Return ln(P(L|w)) using location_classifier
 	if word in location_classifier.words.keys() and word in words.keys():
-		prob_word_given_location = math.log(location_classifier.words[word]) - math.log(location_classifier.tweetCount)
-		prob_word = math.log(words[word]) - math.log(total_tweets)
+		prob_word_given_location = math.log(location_classifier.words[word]) - math.log(location_classifier.wordOccurrenceCount)
+		prob_word = math.log(words[word]) - math.log(totalWordOccurrence)
 		return prob_word_given_location - prob_word
 	return 0
 
@@ -119,16 +119,16 @@ train = open(trainFile, 'r')
 for line in train:
 	line = line.lower()
 	tweets.append(line)
-	total_tweets+=1
 
 for tweet in tweets :
 	tweet_tokens = tweet.split(" ")
-	if tweet_tokens[0] in locations.keys() :
+	if tweet_tokens[0] in locations.keys():
 		classifier = locations[tweet_tokens[0]]
 	else:
 		classifier = WordLocationClassifier(tweet_tokens[0])
 		locations[tweet_tokens[0]] = classifier
 	classifier.parse(" ".join(tweet_tokens[1:]))
+	totalWordOccurrence += len(tweet_tokens) - 1
 
 tweets=[]
 test = open(testFile, 'r')
@@ -137,9 +137,9 @@ for line in test:
 	tweets.append(line)
 
 
-output = open(outFile,"w+")
-for tweet in tweets :
-	testLocation=classify_tweet(tweet)
+output = open(outFile, "w+")
+for tweet in tweets:
+	testLocation = classify_tweet(tweet)
 	output.write(testLocation + ' ' + tweet)
 
 for location in locations.keys():
