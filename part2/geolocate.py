@@ -15,8 +15,8 @@ words = {}
 
 def postProcessingWords(word):
 	processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>\n]', '', word)
-	if processedWord in nltkStopWords:
-		processedWord = ''
+	# if processedWord in nltkStopWords:
+	# 	processedWord = ''
 	# if processedWord.endswith(nltkStemWords):
 	# 	stemWord = next((stemWord for stemWord in nltkStemWords if processedWord.endswith(stemWord)), None)
 	# 	processedWord.rstrip(stemWord)
