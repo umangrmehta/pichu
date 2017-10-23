@@ -65,11 +65,15 @@ class WordLocationClassifier:
 # Returns ln(P(L|w)) for the given Location and Word
 def location_for_word_score(word, location_classifier):
 	# TODO: Calculate and Return ln(P(L|w)) using location_classifier
-	if word in location_classifier.words.keys() and word in words.keys():
-		prob_word_given_location = math.log(location_classifier.words[word]) - math.log(location_classifier.wordOccurrenceCount)
-		prob_word = math.log(words[word]) - math.log(totalWordOccurrence)
-		return prob_word_given_location - prob_word
-	return 0
+	if word in location_classifier.words.keys():
+		prob_word_given_location = math.log(location_classifier.words[word] + 1) - math.log(location_classifier.wordOccurrenceCount)
+	else:
+		prob_word_given_location = - math.log(location_classifier.wordOccurrenceCount)
+	if word in words.keys():
+		prob_word = math.log(words[word] + 1) - math.log(totalWordOccurrence)
+	else:
+		prob_word = - math.log(totalWordOccurrence)
+	return prob_word_given_location - prob_word
 
 
 # Classify Tweet based on Prior Knowledge
