@@ -70,9 +70,9 @@ def location_for_word_score(tweetWords, locationClassifier):
 	probWordGivenLocation = 0
 	for word in tweetWords:
 		if word in locationClassifier.words.keys():
-			probWordGivenLocation += math.log(locationClassifier.words[word]) - math.log(sum(locationClassifier.words.values()))
+			probWordGivenLocation += math.log(locationClassifier.words[word] + 1) - math.log(sum(locationClassifier.words.values()) + len(words.keys()))
 		else:
-			probWordGivenLocation += - math.log(sum(locationClassifier.words.values()))
+			probWordGivenLocation -= math.log(sum(locationClassifier.words.values()) + len(words.keys()))
 		# if word in words.keys():
 		# 	prob_word = math.log(words[word] + 1) - math.log(totalTweets)
 		# else:
