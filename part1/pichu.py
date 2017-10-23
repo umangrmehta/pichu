@@ -463,7 +463,9 @@ else:
 	enemyPlayer = "w"
 
 horizon = 3
-if timer < 75:
+if timer < 10:
+	horizon = 3
+elif timer < 75:
 	horizon = 4
 elif timer < 180:
 	horizon = 5
