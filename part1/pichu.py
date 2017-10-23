@@ -463,7 +463,12 @@ else:
 	enemyPlayer = "w"
 
 horizon = 3
-
+if timer < 75:
+	horizon = 4
+elif timer < 180:
+	horizon = 5
+elif timer < 500:
+	horizon = 6
 
 for counter in range(0, len(initialPosition), 1):
 	inputBoard.append(initialPosition[counter])
