@@ -97,7 +97,7 @@ def classify_tweet(tweet):
 		# 	testLocations[location] = locationPerWord
 		locationForWordScore = location_for_word_score(processedWords, classifier)
 		testLocations[location] = locationForWordScore
-	return max(testLocations.items, key=lambda k, v: v)[1]
+	return [k for k, v in testLocations.items() if v == max(testLocations.values())][0]
 
 #trainingFile=sys.argv[1]
 #testingFile=sys.argv[2]
