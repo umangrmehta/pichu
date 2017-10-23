@@ -15,10 +15,10 @@ words = {}
 
 
 def postProcessingWords(word):
-	# processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>~`\|\n]', '', word)
-	processedWord = word.translate(None, string.punctuation)
-	# if processedWord in nltkStopWords:
-	# 	processedWord = ''
+	processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>~`\|\n]', '', word)
+	# processedWord = word.translate(None, string.punctuation)
+	if processedWord in nltkStopWords:
+		processedWord = ''
 	# if processedWord.endswith(nltkStemWords):
 	# 	stemWord = next((stemWord for stemWord in nltkStemWords if processedWord.endswith(stemWord)), None)
 	# 	processedWord.rstrip(stemWord)
