@@ -15,13 +15,13 @@ words = {}
 
 
 def postProcessingWords(word):
-	processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>~`\|12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\n]', '', word)
+	processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>~`\|12345678901234567890\n]', '', word)
 	# processedWord = word.translate(None, string.punctuation)
 	if processedWord in nltkStopWords:
 		processedWord = ''
-	# if processedWord.endswith(nltkStemWords):
-	# 	stemWord = next((stemWord for stemWord in nltkStemWords if processedWord.endswith(stemWord)), None)
-	# 	processedWord.rstrip(stemWord)
+	#if processedWord.endswith(nltkStemWords):
+	#	stemWord = next((stemWord for stemWord in nltkStemWords if processedWord.endswith(stemWord)), None)
+	#	processedWord.rstrip(stemWord)
 	return processedWord
 
 
@@ -99,32 +99,32 @@ def classify_tweet(tweet):
 		testLocations[location] = locationForWordScore
 	return [k for k, v in testLocations.items() if v == max(testLocations.values())][0]
 
-#trainingFile=sys.argv[1]
-#testingFile=sys.argv[2]
-#outputFile=sys.argv[3]
-trainingFile='tweets.train.txt'
-testingFile='tweets.test1.txt'
-outputFile='outputFile.txt'
+trainingFile=sys.argv[1]
+testingFile=sys.argv[2]
+outputFile=sys.argv[3]
+#trainingFile='tweets.train.txt'
+#testingFile='tweets.test1.txt'
+#outputFile='outputFile.txt'
 tweets = []
 
 # https://gist.github.com/sebleier/554280
 # https://piazza.com/class/j6lbw30o3z35cw?cid=233
 nltkStopWords=['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now']
-nltkStemWords=('ing', 'ed', 's', 'er')
+nltkStemWords=('e','ing', 'ed', 's', 'er')
 # https://piazza.com/class/j6lbw30o3z35cw?cid=258
 
-cwd = os.getcwd()
-commandTrain='cat '+cwd+'/'+trainingFile+' | tr \'\200-\377\' \' \' | tr \'\\r\' \' \' > '+cwd+'/'+trainingFile+'.clean'
-commandTest='cat '+cwd+'/'+testingFile+' | tr \'\200-\377\' \' \' | tr \'\\r\' \' \' > '+cwd+'/'+testingFile+'.clean'
+#cwd = os.getcwd()
+commandTrain='cat '+trainingFile+' | tr \'\200-\377\' \' \' | tr \'\\r\' \' \' > '+trainingFile+'.clean'
+commandTest='cat '+testingFile+' | tr \'\200-\377\' \' \' | tr \'\\r\' \' \' > '+testingFile+'.clean'
 processTrain = subprocess.Popen(commandTrain, shell=True, stdout=subprocess.PIPE)
 outTrain,errTrain = processTrain.communicate()
 processTest = subprocess.Popen(commandTest, shell=True, stdout=subprocess.PIPE)
 outTest,errTest = processTest.communicate()
 pattern = re.compile(r'.*,_[A-Z][A-Z]\s')
 
-trainFile = cwd+'/'+trainingFile+'.clean'
-testFile = cwd+'/'+testingFile+'.clean'
-outFile = cwd+'/'+outputFile
+trainFile = trainingFile+'.clean'
+testFile = testingFile+'.clean'
+outFile = outputFile
 
 train = open(trainFile, 'r')
 for line in train:
@@ -158,9 +158,9 @@ for tweet in tweets:
 	if testLocation == tweetLocation:
 		correctCount += 1
 
-#for location in locations.keys():
-#	classifier = locations[location]
-#	locationTop5 = classifier.top_5_words()
-#	print(location + ": " + str(locationTop5))
+for location in locations.keys():
+	classifier = locations[location]
+	locationTop5 = classifier.top_5_words()
+	print(location + ": " + str(locationTop5))
 
 print("Accuracy: " + str(correctCount * 100.0 / len(tweets)))
