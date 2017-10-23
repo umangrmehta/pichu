@@ -9,7 +9,7 @@ import os
 import math
 import string
 
-totalWordOccurrence = 0
+totalTweets = 0
 locations = {}
 words = {}
 
@@ -29,7 +29,7 @@ class WordLocationClassifier:
 	def __init__(self, location):
 		self.location = location
 		self.words = {}
-		self.wordOccurrenceCount = 0
+		self.tweetCount = 0
 
 	def parse(self, tweet):
 		process_copy = copy.deepcopy(tweet)
@@ -48,7 +48,7 @@ class WordLocationClassifier:
 					words[processedWord] += 1
 				else:
 					words[processedWord] = 1
-		self.wordOccurrenceCount += len(tweet_words)
+		self.tweetCount += 1
 
 	def top_5_words(self):
 		location_scores = {}
@@ -65,17 +65,18 @@ class WordLocationClassifier:
 
 
 # Returns ln(P(L|w)) for the given Location and Word
-def location_for_word_score(word, location_classifier):
+def location_for_word_score(word, locationClassifier):
 	# TODO: Calculate and Return ln(P(L|w)) using location_classifier
-	if word in location_classifier.words.keys():
-		prob_word_given_location = math.log(location_classifier.words[word] + 1) - math.log(location_classifier.wordOccurrenceCount)
+	if word in locationClassifier.words.keys():
+		probWordGivenLocation = math.log(locationClassifier.words[word] + 1) - math.log(locationClassifier.tweetCount)
 	else:
-		prob_word_given_location = - math.log(location_classifier.wordOccurrenceCount)
-	if word in words.keys():
-		prob_word = math.log(words[word] + 1) - math.log(totalWordOccurrence)
-	else:
-		prob_word = - math.log(totalWordOccurrence)
-	return prob_word_given_location - prob_word
+		probWordGivenLocation = - math.log(locationClassifier.tweetCount)
+	# if word in words.keys():
+	# 	prob_word = math.log(words[word] + 1) - math.log(totalTweets)
+	# else:
+	# 	prob_word = - math.log(totalTweets)
+	probLocation = math.log(locationClassifier.tweetCount) - math.log(totalTweets)
+	return probWordGivenLocation + probLocation
 
 
 # Classify Tweet based on Prior Knowledge
@@ -125,7 +126,7 @@ for line in train:
 	line = line.lower()
 	tweets.append(line)
 
-for tweet in tweets :
+for tweet in tweets:
 	tweet_tokens = tweet.split(" ")
 	if tweet_tokens[0] in locations.keys():
 		classifier = locations[tweet_tokens[0]]
@@ -133,7 +134,8 @@ for tweet in tweets :
 		classifier = WordLocationClassifier(tweet_tokens[0])
 		locations[tweet_tokens[0]] = classifier
 	classifier.parse(" ".join(tweet_tokens[1:]))
-	totalWordOccurrence += len(tweet_tokens) - 1
+
+totalTweets = len(tweets)
 
 tweets = []
 test = open(testFile, 'r')
