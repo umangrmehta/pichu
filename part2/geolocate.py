@@ -1,13 +1,12 @@
 #!/usr/bin/python
 # Authors: Umang Mehta, Samanvitha Pradhan & Vaishnavi Srinivasan
+# The Report for this program is included in the README.md file alongside this file.
+
 import sys
-from collections import Counter
 import copy
 import re
 import subprocess
-import os
 import math
-import string
 
 totalTweets = 0
 locations = {}
@@ -16,12 +15,8 @@ words = {}
 
 def postProcessingWords(word):
 	processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>~`\|12345678901234567890\n]', '', word)
-	# processedWord = word.translate(None, string.punctuation)
 	if processedWord in nltkStopWords:
 		processedWord = ''
-	#if processedWord.endswith(nltkStemWords):
-	#	stemWord = next((stemWord for stemWord in nltkStemWords if processedWord.endswith(stemWord)), None)
-	#	processedWord.rstrip(stemWord)
 	return processedWord
 
 
@@ -64,19 +59,14 @@ class WordLocationClassifier:
 		return top5.keys()[:5]
 
 
-# Returns ln(P(L|w)) for the given Location and Word
+# Returns ln(P(L|Tweet)) for the given Location and Tweet
 def location_for_word_score(tweetWords, locationClassifier):
-	# TODO: Calculate and Return ln(P(L|w)) using location_classifier
 	probWordGivenLocation = 0
 	for word in tweetWords:
 		if word in locationClassifier.words.keys():
 			probWordGivenLocation += math.log(locationClassifier.words[word] + 1) - math.log(sum(locationClassifier.words.values()) + len(words.keys()))
 		else:
 			probWordGivenLocation -= math.log(sum(locationClassifier.words.values()) + len(words.keys()))
-		# if word in words.keys():
-		# 	prob_word = math.log(words[word] + 1) - math.log(totalTweets)
-		# else:
-		# 	prob_word = - math.log(totalTweets)
 	probLocation = math.log(locationClassifier.tweetCount) - math.log(totalTweets)
 	return probWordGivenLocation + probLocation
 
@@ -84,42 +74,34 @@ def location_for_word_score(tweetWords, locationClassifier):
 # Classify Tweet based on Prior Knowledge
 def classify_tweet(tweet):
 	processedWords = []
-	locationPerWord=0
-	testLocations={}
+	testLocations = {}
 	process_copy = copy.deepcopy(tweet)
 	tweet_words = process_copy.split(" ")
 	for word in tweet_words[1:]:
 		processedWords.append(postProcessingWords(word))
 
 	for location, classifier in locations.items():
-		# for word in processedWords:
-		# 	locationPerWord += location_for_word_score(word, classifier)
-		# 	testLocations[location] = locationPerWord
 		locationForWordScore = location_for_word_score(processedWords, classifier)
 		testLocations[location] = locationForWordScore
 	return [k for k, v in testLocations.items() if v == max(testLocations.values())][0]
 
-trainingFile=sys.argv[1]
-testingFile=sys.argv[2]
-outputFile=sys.argv[3]
-#trainingFile='tweets.train.txt'
-#testingFile='tweets.test1.txt'
-#outputFile='outputFile.txt'
+trainingFile = sys.argv[1]
+testingFile = sys.argv[2]
+outputFile = sys.argv[3]
 tweets = []
 
 # https://gist.github.com/sebleier/554280
 # https://piazza.com/class/j6lbw30o3z35cw?cid=233
-nltkStopWords=['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now']
-nltkStemWords=('e','ing', 'ed', 's', 'er')
+nltkStopWords = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now']
+nltkStemWords = ('e','ing', 'ed', 's', 'er')
 # https://piazza.com/class/j6lbw30o3z35cw?cid=258
 
-#cwd = os.getcwd()
 commandTrain='cat '+trainingFile+' | tr \'\200-\377\' \' \' | tr \'\\r\' \' \' > '+trainingFile+'.clean'
 commandTest='cat '+testingFile+' | tr \'\200-\377\' \' \' | tr \'\\r\' \' \' > '+testingFile+'.clean'
 processTrain = subprocess.Popen(commandTrain, shell=True, stdout=subprocess.PIPE)
-outTrain,errTrain = processTrain.communicate()
+outTrain, errTrain = processTrain.communicate()
 processTest = subprocess.Popen(commandTest, shell=True, stdout=subprocess.PIPE)
-outTest,errTest = processTest.communicate()
+outTest, errTest = processTest.communicate()
 pattern = re.compile(r'.*,_[A-Z][A-Z]\s')
 
 trainFile = trainingFile+'.clean'
