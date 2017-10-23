@@ -65,34 +65,39 @@ class WordLocationClassifier:
 
 
 # Returns ln(P(L|w)) for the given Location and Word
-def location_for_word_score(word, locationClassifier):
+def location_for_word_score(tweetWords, locationClassifier):
 	# TODO: Calculate and Return ln(P(L|w)) using location_classifier
-	if word in locationClassifier.words.keys():
-		probWordGivenLocation = math.log(locationClassifier.words[word] + 1) - math.log(locationClassifier.tweetCount)
-	else:
-		probWordGivenLocation = - math.log(locationClassifier.tweetCount)
-	# if word in words.keys():
-	# 	prob_word = math.log(words[word] + 1) - math.log(totalTweets)
-	# else:
-	# 	prob_word = - math.log(totalTweets)
-	probLocation = math.log(locationClassifier.tweetCount) - math.log(totalTweets)
-	return probWordGivenLocation + probLocation
+	probWordGivenLocation = 1
+	for word in tweetWords:
+		if word in locationClassifier.words.keys():
+			probWordGivenLocation *= float(locationClassifier.words[word]) / locationClassifier.tweetCount
+		else:
+			probWordGivenLocation *= 1.0 / locationClassifier.tweetCount
+		# if word in words.keys():
+		# 	prob_word = math.log(words[word] + 1) - math.log(totalTweets)
+		# else:
+		# 	prob_word = - math.log(totalTweets)
+	probLocation = float(locationClassifier.tweetCount) / totalTweets
+	return probWordGivenLocation * probLocation
 
 
 # Classify Tweet based on Prior Knowledge
 def classify_tweet(tweet):
-	processedWord=[]
+	processedWords = []
 	locationPerWord=0
 	testLocations={}
 	process_copy = copy.deepcopy(tweet)
 	tweet_words = process_copy.split(" ")
 	for word in tweet_words[1:]:
-		processedWord.append(postProcessingWords(word))
-	for location,classifier in locations.items():
-		for word in processedWord:
-			locationPerWord += location_for_word_score(word, classifier)
-			testLocations[location] = locationPerWord
-	return [k for k, v in testLocations.items() if v == max(testLocations.values())][0]
+		processedWords.append(postProcessingWords(word))
+
+	for location, classifier in locations.items():
+		# for word in processedWords:
+		# 	locationPerWord += location_for_word_score(word, classifier)
+		# 	testLocations[location] = locationPerWord
+		locationForWordScore = location_for_word_score(processedWords, classifier)
+		testLocations[location] = locationForWordScore
+	return max(testLocations.items, key=lambda k, v: v)[1]
 
 #trainingFile=sys.argv[1]
 #testingFile=sys.argv[2]
