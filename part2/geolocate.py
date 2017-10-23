@@ -67,12 +67,12 @@ class WordLocationClassifier:
 # Returns ln(P(L|w)) for the given Location and Word
 def location_for_word_score(tweetWords, locationClassifier):
 	# TODO: Calculate and Return ln(P(L|w)) using location_classifier
-	probWordGivenLocation = 1
+	probWordGivenLocation = 0
 	for word in tweetWords:
 		if word in locationClassifier.words.keys():
-			probWordGivenLocation += math.log(locationClassifier.words[word]) - math.log(locationClassifier.tweetCount)
+			probWordGivenLocation += math.log(locationClassifier.words[word]) - math.log(sum(locationClassifier.words.values()))
 		else:
-			probWordGivenLocation += - math.log(locationClassifier.tweetCount)
+			probWordGivenLocation += - math.log(sum(locationClassifier.words.values()))
 		# if word in words.keys():
 		# 	prob_word = math.log(words[word] + 1) - math.log(totalTweets)
 		# else:
