@@ -7,6 +7,7 @@ import re
 import subprocess
 import os
 import math
+import string
 
 totalWordOccurrence = 0
 locations = {}
@@ -14,7 +15,8 @@ words = {}
 
 
 def postProcessingWords(word):
-	processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>\n]', '', word)
+	# processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>~`\|\n]', '', word)
+	processedWord = word.translate(None, string.punctuation)
 	# if processedWord in nltkStopWords:
 	# 	processedWord = ''
 	# if processedWord.endswith(nltkStemWords):
