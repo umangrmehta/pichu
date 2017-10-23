@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Authors: Umang Mehta, Samanvitha Pradhan & Vaishnavi Srinivasan
+# Report is included in th eREADME.md file alongside this file
 
 import copy
 import sys
@@ -462,6 +463,7 @@ else:
 	enemyPlayer = "w"
 
 horizon = 3
+
 
 for counter in range(0, len(initialPosition), 1):
 	inputBoard.append(initialPosition[counter])
