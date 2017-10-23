@@ -15,7 +15,7 @@ words = {}
 
 
 def postProcessingWords(word):
-	processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>~`\|\n]', '', word)
+	processedWord = re.sub('[\[\]\\-_+=;:\"\',.?/!@#$%^&*(){}<>~`\|12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\n]', '', word)
 	# processedWord = word.translate(None, string.punctuation)
 	if processedWord in nltkStopWords:
 		processedWord = ''
@@ -53,7 +53,7 @@ class WordLocationClassifier:
 	def top_5_words(self):
 		location_scores = {}
 		for word in self.words.keys():
-			location_scores[word] = location_for_word_score(word, self)
+			location_scores[word] = location_for_word_score([word], self)
 
 		top5 = {}
 		while len(top5) < 5:
@@ -70,15 +70,15 @@ def location_for_word_score(tweetWords, locationClassifier):
 	probWordGivenLocation = 1
 	for word in tweetWords:
 		if word in locationClassifier.words.keys():
-			probWordGivenLocation *= float(locationClassifier.words[word]) / locationClassifier.tweetCount
+			probWordGivenLocation += math.log(locationClassifier.words[word]) - math.log(locationClassifier.tweetCount)
 		else:
-			probWordGivenLocation *= 1.0 / locationClassifier.tweetCount
+			probWordGivenLocation += - math.log(locationClassifier.tweetCount)
 		# if word in words.keys():
 		# 	prob_word = math.log(words[word] + 1) - math.log(totalTweets)
 		# else:
 		# 	prob_word = - math.log(totalTweets)
-	probLocation = float(locationClassifier.tweetCount) / totalTweets
-	return probWordGivenLocation * probLocation
+	probLocation = math.log(locationClassifier.tweetCount) - math.log(totalTweets)
+	return probWordGivenLocation + probLocation
 
 
 # Classify Tweet based on Prior Knowledge
@@ -158,9 +158,9 @@ for tweet in tweets:
 	if testLocation == tweetLocation:
 		correctCount += 1
 
-for location in locations.keys():
-	classifier = locations[location]
-	locationTop5 = classifier.top_5_words()
-	print(location + ": " + str(locationTop5))
+#for location in locations.keys():
+#	classifier = locations[location]
+#	locationTop5 = classifier.top_5_words()
+#	print(location + ": " + str(locationTop5))
 
 print("Accuracy: " + str(correctCount * 100.0 / len(tweets)))
